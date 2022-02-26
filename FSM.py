@@ -6,7 +6,18 @@ Created on Thu Feb 17 2022
 @author: alberto
 """
 
+from colorama import init, Fore, Back, Style
+init(autoreset=True)
 
+
+DEBUGMODE = True
+COLOR = Fore.MAGENTA
+
+def debug_print(string):
+    if DEBUGMODE:
+        print(COLOR + string) 
+    
+    
 class Finite_State_Machine:
     def __init__(self, FSM_name):
         self.name = FSM_name
@@ -15,8 +26,8 @@ class Finite_State_Machine:
     def __str__(self):
         return self.name
     
-    def event_triggered(self, event):
-        print('From ' + self.name + ' found: ' + '{:}'.format(event))
+    # def event_triggered(self, event):
+    #     print('Triggered from ' + self.name + ' found: ' + '{:}'.format(event))
     
     def print_event_list(self):
         for event in self.event_list:
@@ -26,9 +37,9 @@ class Finite_State_Machine:
         for event in self.event_list:
             event.check_events(pygame_event)
             if event.triggered:
-                print('From ' + self.name + ' found: ' + '{:}'.format(event))
+                debug_print('From ' + self.name + ' found: ' + '{:}'.format(event))
                 event.triggered = False
-                
+    
                 
 class Event_State_Table:
     def __init__(self, name):
@@ -36,17 +47,18 @@ class Event_State_Table:
     
     
 class Event():
-    def __init__(self, name, event_list):
+    def __init__(self, name, event_list, debug=True):
         self.name = name
         self.triggered = False
         
         self.event_list = []
         if type(event_list) == list:
             for event in event_list:
-                self.event_list.append(event)
-                
+                self.event_list.append(event)         
         else:
             self.event_list = [event_list]
+            
+        self.debug = debug
                         
     def __str__(self):
         return self.name
@@ -56,18 +68,21 @@ class Event():
             print('{:} is in the list'.format(event))
         print('')
             
+    def _print(self, string):
+        color = Fore.MAGENTA
+        if self.debug:
+            print(color + string)
+    
     def check_events(self, pygame_event):
         # print('{:}'.format(pygame_event.key))
         for event in self.event_list:
             # print('Checking {:}'.format(event))
             if pygame_event.key == event:
-                # self.trigger_event(event)
-                print('From ' + self.name + ' found: ' + '{:}'.format(event))
-                self.triggered = True
+                self.trigger_event(event)                
             
     def trigger_event(self, event):
-        print('From ' + self.name + ' found: ' + '{:}'.format(event))
-        super().event_triggered(event)
+        debug_print('From ' + self.name + ' found: ' + '{:}'.format(event))
+        self.triggered = True
     
     
 class State:    
