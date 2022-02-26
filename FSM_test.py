@@ -21,6 +21,11 @@ FSM_test.event_list.append(FSM_event_pressed_left)
 
 FSM_test.print_event_list()
 
+dictionary = {'state1': [('pressed_right', 'state2')],
+              'state2': [('pressed_left', 'state1')],}
+FSM_table = FSM.Event_State_Table(dictionary)
+FSM_table.print_table()
+
 #%%
 
 for ii,event in enumerate(event_list):

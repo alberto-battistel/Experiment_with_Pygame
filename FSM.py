@@ -10,7 +10,7 @@ from colorama import init, Fore, Back, Style
 init(autoreset=True)
 
 
-DEBUGMODE = True
+DEBUGMODE = False
 COLOR = Fore.MAGENTA
 
 def debug_print(string):
@@ -40,11 +40,20 @@ class Finite_State_Machine:
                 debug_print('From ' + self.name + ' found: ' + '{:}'.format(event))
                 event.triggered = False
     
-                
-class Event_State_Table:
-    def __init__(self, name):
+    def check_table(self, table):
         pass
+                
     
+class Event_State_Table:
+    def __init__(self, dictionary):
+        self.dictionary = dictionary
+    
+    def print_table(self):
+        for key,values in self.dictionary.items():
+            fmt = "State {}: " + (len(values)-1)*" {},"
+            fmt += " {}"
+            print(fmt.format(key, *values))
+ 
     
 class Event():
     def __init__(self, name, event_list, debug=True):
@@ -67,11 +76,6 @@ class Event():
         for event in self.event_list:
             print('{:} is in the list'.format(event))
         print('')
-            
-    def _print(self, string):
-        color = Fore.MAGENTA
-        if self.debug:
-            print(color + string)
     
     def check_events(self, pygame_event):
         # print('{:}'.format(pygame_event.key))
