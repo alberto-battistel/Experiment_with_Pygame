@@ -15,9 +15,6 @@ pygame.display.set_caption("First Game!")
 
 clock = pygame.time.Clock()
 
-FSM_test = FSM.Finite_State_Machine('FSM_test')
-FSM_event = FSM.Event('input', event_list=[pygame.K_LEFT, pygame.K_RIGHT])
-
 event_list = []
 
 run = True
