@@ -19,17 +19,24 @@ FSM_test.add_to_events([FSM_event_pressed_right, FSM_event_pressed_left])
 
 FSM_test.print_event_list()
 
-dictionary = {'state1': [('pressed_right', 'state2')],
-              'state2': [('pressed_left', 'state1')],}
-FSM_table = FSM.Event_State_Table(dictionary)
-FSM_table.print_table()
+table = {'face_left': [('pressed_right', 'face_right'),
+                       ('pressed_left', 'face_left'),
+                       ],
+              'face_right': [('pressed_left', 'face_left'),
+                             ('pressed_right', 'face_right'),
+                             ],}
 
-FSM_state1 = FSM.State('state1', True)
-FSM_state2 = FSM.State('state2', False)
+FSM_table = FSM.Event_State_Table(table)
+FSM_table.print_table()
+FSM_table.first_state()
+
+FSM_state1 = FSM.State('face_left', False)
+FSM_state2 = FSM.State('face_right', False)
 
 FSM_test.event_state_table = FSM_table
 FSM_test.add_to_states([FSM_state1, FSM_state2])
-FSM_test.pass_starting_state()
+FSM_test.find_starting_state()
+FSM_test.change_state()
 FSM_test.print_state_list()
 
 
@@ -38,10 +45,9 @@ FSM_test.print_state_list()
 for ii,event in enumerate(event_list):
     if event.type == pygame.KEYDOWN:
         print('at position {:}'.format(ii))
-        # event.key
-        # FSM_event.check_events(event)
         FSM_test.check_events(event)
-        FSM_test.check_table()
+        # FSM_test.check_table()
+        FSM_test.run_FSM()
         print('')
         
 
