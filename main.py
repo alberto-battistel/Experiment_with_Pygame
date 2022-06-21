@@ -19,7 +19,8 @@ class App:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-                                                
+
+            self.screen.fill((220, 220, 220))
             pygame.display.set_caption("FPS: {:.1f}".format(self.clock.get_fps()))
     pygame.quit()
      
