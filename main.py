@@ -19,10 +19,19 @@ class App:
     def set_background(self):
         self.screen.fill((220, 220, 220))
                 
+    def update(self):
+        pass
+        
+    def render(self):
+        pass
+    
+    def quit(self):
+        pygame.quit()
+                        
     def run(self):
         while self.running:
             self.real_fps = self.clock.get_fps()
-            self.clock.tick(settings['FPS'])
+            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -30,7 +39,13 @@ class App:
             self.set_background()
             self.set_caption()
             
-    pygame.quit()
-     
+            self.update()
+            self.render()
+            
+            self.clock.tick(settings['FPS'])
+            
+    
 if __name__ == '__main__':
-    App().run()
+    game = App()
+    game.run()
+    game.quit()
