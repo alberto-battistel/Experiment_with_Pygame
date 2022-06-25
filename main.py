@@ -19,6 +19,9 @@ class App:
     def set_background(self):
         self.screen.fill((220, 220, 220))
                 
+    def handle_events(self, event):
+        pass
+        
     def update(self):
         pass
         
@@ -35,6 +38,7 @@ class App:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                self.handle_events(event)
             
             self.set_background()
             self.set_caption()
