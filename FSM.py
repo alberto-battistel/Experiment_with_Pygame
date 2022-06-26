@@ -1,29 +1,65 @@
-from enum import Enum, auto
+from enum import Enum
 
-from main import App
+#from main import App
 
 class State(Enum):
-    state1 = auto()
-    state2 = auto()
-    state3 = auto()
+    consonants = 'consonants'
+    vocals = 'vocals'
+    foreign = 'foreign letters'
                     
     def enter(self):
-        print("Entering" + self.__name__)
+        print("Entering " + self.name)
         
     def run(self):
-        pass
+        print("Running " + self.name)
     
     def exit(self):
-        print("Exiting" + self.__name__)
+        print("Exiting " + self.name)
 
 class FiniteStateMachine():
+    table = {State.consonants: [{State.vocals: ['a', 'e', 'i', 'o',  'u', ]}, 
+                                        {State.foreign: ['j','k', 'w', 'y', 'x',  ]}, ], 
+                    State.vocals: [{State.foreign: ['j','k', 'w', 'y', 'x',  ]},
+                                        {State.consonants: ['q', 'r', 't', 'z', 'p', ]}, ],  
+                    State.foreign: [{State.vocals: ['a', 'e', 'i', 'o',  'u', ]}, 
+                                        {State.consonants: ['q', 'r', 't', 'z', 'p', ]}, ]
+                                        }
+                    
     def __init__(self):    
-        self.actual_state = State.state1
+        self.actual_state = State.consonants
         self.old_state = None
         self.running = False  
-        
-        print(1)
     
+    def start_FSM(self):
+       self.actual_state.enter()
+    
+    def trigger_transition(self, new_state: State):
+        self.old_state = self.actual_state
+        self.old_state.exit()
+        self.actual_state = new_state
+        self.actual_state.enter()
+        
+    def handle_events(self, event):
+        target_states = self.table[self.actual_state]
+        for case in target_states:
+            for key, value in case.items():
+                if event in value:
+                    print(event)
+                    self.trigger_transition(key)
+                    return
+        print(event)
+        self.actual_state.run()
+                    
+                
+events = "aeppwo"
+fsm = FiniteStateMachine()
+fsm.start_FSM()
+for event in events:
+    fsm.handle_events(event)
+    
+
+
+ 
     #@classmethod
     #def initiate(cls):
         #cls.actual_state = cls.state1
@@ -43,7 +79,7 @@ class FiniteStateMachine():
         #else:
             #self.run()    
 
-fsm = FiniteStateMachine()
+
 
 #fsm = State.initiate()
 #fsm.enter()
