@@ -10,6 +10,8 @@ class App:
     def __init__(self):
         pygame.init()
         pygame.font.init()
+        
+        self.settings = settings
         self.screen = pygame.display.set_mode(settings['screen_size'])
         self.clock = pygame.time.Clock()
         self.running = True

@@ -85,12 +85,12 @@ class TestRun(App):
         
     def handle_events(self,event):
         if event.type == KEYDOWN:
-            key = str(event.key)
+            key = chr(event.key)
             self.string_2_render = self.font.render(key, True, (255,0,0))
             
     def render(self):
         if self.string_2_render is not None:
-            self.screen.blit(self.string_2_render, (40,240))
+            self.screen.blit(self.string_2_render, [int(s/2) for s in self.settings['screen_size']])
             
 
                     
