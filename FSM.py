@@ -16,13 +16,27 @@ class State(Enum):
     def exit(self):
         print("Exiting " + self.name)
 
+class Condition():
+    def __init__(self,  *matching_events):
+        self.matching_events = matching_events
+        
+    def __call__(self,  event):
+        if event in self.matching_events:
+            return True
+        else:
+            return False 
+        
+is_vocal = Condition( 'a', 'e', 'i', 'o',  'u')
+is_foreign = Condition('j','k', 'w', 'y', 'x')
+is_consonant = Condition('q', 'r', 't', 'z', 'p')
+
 class FiniteStateMachine():
-    table = {State.consonants: [{State.vocals: ['a', 'e', 'i', 'o',  'u', ]}, 
-                                        {State.foreign: ['j','k', 'w', 'y', 'x',  ]}, ], 
-                    State.vocals: [{State.foreign: ['j','k', 'w', 'y', 'x',  ]},
-                                        {State.consonants: ['q', 'r', 't', 'z', 'p', ]}, ],  
-                    State.foreign: [{State.vocals: ['a', 'e', 'i', 'o',  'u', ]}, 
-                                        {State.consonants: ['q', 'r', 't', 'z', 'p', ]}, ]
+    table = {State.consonants: [{State.vocals: is_vocal}, 
+                                        {State.foreign: is_foreign} ], 
+                    State.vocals: [{State.foreign: is_foreign},
+                                        {State.consonants: is_consonant}, ],  
+                    State.foreign: [{State.vocals: is_vocal}, 
+                                        {State.consonants: is_consonant}, ]
                                         }
                     
     def __init__(self):    
@@ -42,10 +56,10 @@ class FiniteStateMachine():
     def handle_events(self, event):
         target_states = self.table[self.actual_state]
         for case in target_states:
-            for key, value in case.items():
-                if event in value:
+            for state, condition in case.items():
+                if condition(event):
                     print(event)
-                    self.trigger_transition(key)
+                    self.trigger_transition(state)
                     return
         print(event)
         self.actual_state.run()
