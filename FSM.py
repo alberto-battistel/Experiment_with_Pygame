@@ -1,6 +1,9 @@
 from enum import Enum
 
-#from main import App
+import pygame
+from pygame.locals import *
+
+from main import App
 
 class State(Enum):
     consonants = 'consonants'
@@ -64,7 +67,9 @@ class FiniteStateMachine():
         print(event)
         self.actual_state.run()
                     
-                
+
+
+#if __name__ == "main":                
 events = "aeppwo"
 fsm = FiniteStateMachine()
 fsm.start_FSM()
@@ -72,41 +77,24 @@ for event in events:
     fsm.handle_events(event)
     
 
-
- 
-    #@classmethod
-    #def initiate(cls):
-        #cls.actual_state = cls.state1
-        #cls.old_state = None
-        #cls.running = False
-    
-    #@classmethod
-    #def change_state(cls, new_state):
-        #cls.old_state = cls.actual_state
-        #cls.actual_state = new_state
-    
-    
+class TestRun(App):
+    def __init__(self):
+        super().__init__()
+        self.font = pygame.font.SysFont('Verdana', 60)
+        self.string_2_render = None
         
-    #def __call__(self):
-        #if self.running == False:
-            #self.enter()
-        #else:
-            #self.run()    
+    def handle_events(self,event):
+        if event.type == KEYDOWN:
+            key = str(event.key)
+            self.string_2_render = self.font.render(key, True, (255,0,0))
+            
+    def render(self):
+        if self.string_2_render is not None:
+            self.screen.blit(self.string_2_render, (40,240))
+            
 
-
-
-#fsm = State.initiate()
-#fsm.enter()
-
-
-
-
-#class TestRun(App):
-    #def __init__(self):
-        #super.__init__()
-        
-    #def handle_events(self,event):
-        #if event.type == pg.KEYDOWN and event.key == pg.K_a:
                     
-#game = App()
-#game.run()
+game = TestRun()
+game.run()
+game.quit()
+

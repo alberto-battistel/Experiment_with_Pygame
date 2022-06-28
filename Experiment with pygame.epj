@@ -2,7 +2,7 @@
   "header": {
     "comment": "eric project file for project Experiment with pygame",
     "copyright": "Copyright (C) 2022 Alberto Battistel, ",
-    "saved": "2022-06-26, 22:47:06"
+    "saved": "2022-06-28, 23:03:35"
   },
   "project": {
     "AUTHOR": "Alberto Battistel",
@@ -70,7 +70,6 @@
     "RESOURCES": [],
     "SOURCES": [
       "FSM.py",
-      "__init__.py",
       "main.py"
     ],
     "SPELLEXCLUDES": "",

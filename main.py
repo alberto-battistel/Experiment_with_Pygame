@@ -47,6 +47,8 @@ class App:
             self.update()
             self.render()
             
+            pygame.display.flip()
+            
             self.clock.tick(settings['FPS'])
             
     
