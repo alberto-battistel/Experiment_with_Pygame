@@ -99,21 +99,34 @@ fsm.start_FSM(State.idle)
 class TestRun(App):
     def __init__(self):
         super().__init__()
-        self.font = pygame.font.SysFont('Verdana', 60)
-        self.surface_2_render = None
+        self.font1 = pygame.font.SysFont('Verdana', 60)
+        self.font2 = pygame.font.SysFont('Verdana', 30)
+        self.state_to_render = self.font1.render("", True, (255,0,0))
+        self.stack_to_render = 5*[self.font2.render("", True, (255,0,0))]
         
     def handle_events(self,event):
         if event.type == KEYDOWN:
             state = fsm.handle_event(event)
-            self.surface_2_render = self.font.render(state, True, (255,0,0))
+            stack = [state.name for state in fsm.stack]
+            
+            self.state_to_render = self.font1.render(state, True, (255,0,0))
+            self.stack_to_render = [self.font2.render(state, True, (255,0,255)) for state in stack]
             
     def render(self):
-        if self.surface_2_render is not None:
-            width,  heigth = self.surface_2_render.get_size()
-            position = [1/4*self.settings['screen_size'][0], 1/2*self.settings['screen_size'][1]]
-            position[0] = round(position[0]-width/2)
-            position[1] = round(position[1]-heigth/2)
-            self.screen.blit(self.surface_2_render, position)
+        # actual state
+        surface = self.state_to_render
+        width,  height = surface.get_size()
+        position = [1/4*self.settings['screen_size'][0], 1/2*self.settings['screen_size'][1]]
+        position[0] = round(position[0]-width/2)
+        position[1] = round(position[1]-height/2)
+        self.screen.blit(surface, position)
+            
+        # stack
+        position = [3/4*self.settings['screen_size'][0], 1/4*self.settings['screen_size'][1]]
+        for surface in self.stack_to_render:
+            height = surface.get_height()
+            position[1] += height
+            self.screen.blit(surface, position)
             
 
                     
