@@ -7,10 +7,10 @@ from pygame.locals import *
 from main import App
 
 class State(Enum):
-    idle = auto()
-    jump = auto()
-    duck = auto()
-    move = auto()
+    Idle = auto()
+    Jump = auto()
+    Duck = auto()
+    Move = auto()
                     
     def enter(self):
         print("Entering " + self.name)
@@ -38,25 +38,25 @@ is_moving = Condition(K_a,  K_d)
 is_ducking = Condition(K_s)
 
 class FiniteStateMachine():
-    table = {State.idle: [
-                                    {State.jump: is_jumping}, 
-                                    {State.move: is_moving}, 
-                                    {State.duck: is_ducking}, 
-                                    {State.idle: is_on_ground},
+    table = {State.Idle: [
+                                    {State.Jump: is_jumping}, 
+                                    {State.Move: is_moving}, 
+                                    {State.Duck: is_ducking}, 
+                                    {State.Idle: is_on_ground},
                                     ], 
-                    State.duck: [
-                                    {State.idle: is_on_ground},
-                                    {State.duck: is_ducking}, 
+                    State.Duck: [
+                                    {State.Idle: is_on_ground},
+                                    {State.Duck: is_ducking}, 
                                      ],  
-                    State.move: [
-                                    {State.idle: is_on_ground}, 
-                                    {State.jump: is_jumping}, 
-                                    {State.duck: is_ducking}, 
-                                    {State.move: is_moving},
+                    State.Move: [
+                                    {State.Idle: is_on_ground}, 
+                                    {State.Jump: is_jumping}, 
+                                    {State.Duck: is_ducking}, 
+                                    {State.Move: is_moving},
                                     ], 
-                    State.jump: [
-                                    {State.idle: is_on_ground},  
-                                    {State.jump: is_jumping},
+                    State.Jump: [
+                                    {State.Idle: is_on_ground},  
+                                    {State.Jump: is_jumping},
                                     ],                 
                                 }
                     
@@ -93,7 +93,7 @@ class FiniteStateMachine():
 #if __name__ == "main":                
 
 fsm = FiniteStateMachine()
-fsm.start_FSM(State.idle)
+fsm.start_FSM(State.Idle)
     
 
 class TestRun(App):
