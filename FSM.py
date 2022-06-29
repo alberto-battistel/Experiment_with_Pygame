@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum,  auto
 
 import pygame
 from pygame.locals import *
@@ -6,9 +6,10 @@ from pygame.locals import *
 from main import App
 
 class State(Enum):
-    consonants = 'consonants'
-    vocals = 'vocals'
-    foreign = 'foreign letters'
+    idle = auto()
+    jump = auto()
+    duck = auto()
+    move = auto()
                     
     def enter(self):
         print("Entering " + self.name)
@@ -19,6 +20,7 @@ class State(Enum):
     def exit(self):
         print("Exiting " + self.name)
 
+
 class Condition():
     def __init__(self,  *matching_events):
         self.matching_events = matching_events
@@ -28,22 +30,37 @@ class Condition():
             return True
         else:
             return False 
-        
-is_vocal = Condition( 'a', 'e', 'i', 'o',  'u')
-is_foreign = Condition('j','k', 'w', 'y', 'x')
-is_consonant = Condition('q', 'r', 't', 'z', 'p')
+
+is_on_ground = Condition(K_SPACE)
+is_jumping = Condition(K_w)
+is_moving = Condition(K_a,  K_d)
+is_ducking = Condition(K_s)
 
 class FiniteStateMachine():
-    table = {State.consonants: [{State.vocals: is_vocal}, 
-                                        {State.foreign: is_foreign} ], 
-                    State.vocals: [{State.foreign: is_foreign},
-                                        {State.consonants: is_consonant}, ],  
-                    State.foreign: [{State.vocals: is_vocal}, 
-                                        {State.consonants: is_consonant}, ]
-                                        }
+    table = {State.idle: [
+                                    {State.jump: is_jumping}, 
+                                    {State.move: is_moving}, 
+                                    {State.duck: is_ducking}, 
+                                    {State.idle: is_on_ground},
+                                    ], 
+                    State.duck: [
+                                    {State.idle: is_on_ground},
+                                    {State.duck: is_ducking}, 
+                                     ],  
+                    State.move: [
+                                    {State.idle: is_on_ground}, 
+                                    {State.jump: is_jumping}, 
+                                    {State.duck: is_ducking}, 
+                                    {State.move: is_moving},
+                                    ], 
+                    State.jump: [
+                                    {State.idle: is_on_ground},  
+                                    {State.jump: is_jumping},
+                                    ],                 
+                                }
                     
     def __init__(self):    
-        self.actual_state = State.consonants
+        self.actual_state = State.idle
         self.old_state = None
         self.running = False  
     
@@ -56,25 +73,23 @@ class FiniteStateMachine():
         self.actual_state = new_state
         self.actual_state.enter()
         
-    def handle_events(self, event):
+    def handle_event(self, event):
         target_states = self.table[self.actual_state]
         for case in target_states:
             for state, condition in case.items():
-                if condition(event):
-                    print(event)
-                    self.trigger_transition(state)
-                    return
-        print(event)
-        self.actual_state.run()
-                    
+                if condition(event.key):
+                    print(event.key)
+                    if state != self.actual_state:
+                        self.trigger_transition(state)
+                    else:
+                        self.actual_state.run()
+        return self.actual_state.name
 
 
 #if __name__ == "main":                
-events = "aeppwo"
+
 fsm = FiniteStateMachine()
 fsm.start_FSM()
-for event in events:
-    fsm.handle_events(event)
     
 
 class TestRun(App):
@@ -85,8 +100,9 @@ class TestRun(App):
         
     def handle_events(self,event):
         if event.type == KEYDOWN:
-            key = chr(event.key)
-            self.string_2_render = self.font.render(key, True, (255,0,0))
+            state = fsm.handle_event(event)
+#            key = chr(event.key)
+            self.string_2_render = self.font.render(state, True, (255,0,0))
             
     def render(self):
         if self.string_2_render is not None:

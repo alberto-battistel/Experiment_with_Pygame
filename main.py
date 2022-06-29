@@ -38,9 +38,12 @@ class App:
         while self.running:
             self.real_fps = self.clock.get_fps()
             
-            for event in pygame.event.get():
+            events = pygame.event.get()
+#            print("number of events: " + str(len(events)))
+            for event in events:
                 if event.type == pygame.QUIT:
                     self.running = False
+                
                 self.handle_events(event)
             
             self.set_background()
