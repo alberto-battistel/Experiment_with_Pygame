@@ -96,17 +96,20 @@ class TestRun(App):
     def __init__(self):
         super().__init__()
         self.font = pygame.font.SysFont('Verdana', 60)
-        self.string_2_render = None
+        self.surface_2_render = None
         
     def handle_events(self,event):
         if event.type == KEYDOWN:
             state = fsm.handle_event(event)
-#            key = chr(event.key)
-            self.string_2_render = self.font.render(state, True, (255,0,0))
+            self.surface_2_render = self.font.render(state, True, (255,0,0))
             
     def render(self):
-        if self.string_2_render is not None:
-            self.screen.blit(self.string_2_render, [int(s/2) for s in self.settings['screen_size']])
+        if self.surface_2_render is not None:
+            width,  heigth = self.surface_2_render.get_size()
+            position = [int(s/2) for s in self.settings['screen_size']]
+            position[0] -= round(width/2)
+            position[1] -= round(heigth/2)
+            self.screen.blit(self.surface_2_render, position)
             
 
                     
