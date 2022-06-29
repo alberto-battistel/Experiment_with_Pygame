@@ -1,4 +1,5 @@
 from enum import Enum,  auto
+from collections import deque
 
 import pygame
 from pygame.locals import *
@@ -60,18 +61,21 @@ class FiniteStateMachine():
                                 }
                     
     def __init__(self):    
-        self.actual_state = State.idle
         self.old_state = None
         self.running = False  
+        self.stack = deque(maxlen=4)
     
-    def start_FSM(self):
+    def start_FSM(self,  starting_state):
+       self.actual_state = starting_state
        self.actual_state.enter()
+       self.stack.appendleft(self.actual_state)
     
     def trigger_transition(self, new_state: State):
         self.old_state = self.actual_state
         self.old_state.exit()
         self.actual_state = new_state
         self.actual_state.enter()
+        self.stack.appendleft(self.actual_state)
         
     def handle_event(self, event):
         target_states = self.table[self.actual_state]
@@ -89,7 +93,7 @@ class FiniteStateMachine():
 #if __name__ == "main":                
 
 fsm = FiniteStateMachine()
-fsm.start_FSM()
+fsm.start_FSM(State.idle)
     
 
 class TestRun(App):
@@ -106,9 +110,9 @@ class TestRun(App):
     def render(self):
         if self.surface_2_render is not None:
             width,  heigth = self.surface_2_render.get_size()
-            position = [int(s/2) for s in self.settings['screen_size']]
-            position[0] -= round(width/2)
-            position[1] -= round(heigth/2)
+            position = [1/4*self.settings['screen_size'][0], 1/2*self.settings['screen_size'][1]]
+            position[0] = round(position[0]-width/2)
+            position[1] = round(position[1]-heigth/2)
             self.screen.blit(self.surface_2_render, position)
             
 
