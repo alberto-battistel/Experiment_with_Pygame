@@ -20,4 +20,9 @@ class Sequencer():
         self.actual_item = next(self.generator)
         return self.actual_item
         
+
+def sprite_loader(resource):
+    return pygame.image.load(resource).convert_alpha()
+        
+        
 ex = Sequencer("1", "2", "3")
