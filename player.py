@@ -21,17 +21,14 @@ class Sequencer():
     def __call__(self):
         self.actual_item = next(self.generator)
         return self.actual_item
-        
+  
+  
 class SpriteSheet():
     def __init__(self,  asset_name,  rect):
         self.asset_name = asset_name
-        self.rect = rect
+        self.rect = rect.copy()
         self.sheet = self.import_image()
         self.images = self.get_strip()
-    
-    
-#    def sprite_loader(self):
-#        return pygame.image.load(self.resource).convert_alpha()
             
     def import_image(self):
         sheet = pygame.image.load(self.asset_name).convert_alpha()
@@ -49,19 +46,16 @@ class SpriteSheet():
     #        images.append(image)
         return images
 
-#sprites = SpriteSheet("first_Experiment.png",  pygame.Rect(0, 0, 16, 16))
-
-#class Player
-
-class TestRun(App):
+class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.settings['FPS'] = 30
-        self.sprites = Sequencer(*SpriteSheet("first_Experiment.png",  pygame.Rect(0, 0, 16, 16)).get_strip())
-        self.surface = self.sprites()
-        self.rect = self.surface.get_rect()
+        self.rect = pygame.Rect(0, 0, 16, 16)
+        self.sprites = Sequencer(*SpriteSheet("first_Experiment.png",  self.rect).get_strip())
+        self.surface = self.sprites() 
+        self.rect = self.rect = self.surface.get_rect()
+        self.settings = None
         
-    def handle_events(self,event):
+    def handle_events(self,  event):
         if event.type == KEYDOWN:
             if event.key == K_a:
                 self.rect.move_ip(-20, 0)
@@ -79,12 +73,29 @@ class TestRun(App):
                 self.rect.move_ip(0, 20)
                 if self.rect.bottom > self.settings['screen_size'][1]:
                     self.rect.bottom = self.settings['screen_size'][1]
-                                        
+    
     def update(self):
         self.surface = self.sprites()
+        
+                    
+class TestRun(App):
+    def __init__(self):
+        super().__init__()
+        self.settings['FPS'] = 30
+        self.player = Player()
+        self.player.settings = self.settings
+#        Sequencer(*SpriteSheet("first_Experiment.png",  pygame.Rect(0, 0, 16, 16)).get_strip())
+#        self.surface = self.sprites()
+#        self.rect = self.surface.get_rect()
+        
+    def handle_events(self,event):
+        self.player.handle_events(event)
+                                        
+    def update(self):
+        self.player.update()
             
     def render(self):
-        self.screen.blit(self.surface, self.rect)
+        self.screen.blit(self.player.surface, self.player.rect)
 
 
 game = TestRun()
