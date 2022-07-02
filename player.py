@@ -37,28 +37,13 @@ def get_strip(sheet, rect):
     images = []
     for x_position in range(0,  sheet_width, step):
         rect.x = x_position
-        image = pygame.Surface(rect.size)
+        image = pygame.Surface(rect.size,  pygame.SRCALPHA)
         image.blit(sheet, (0, 0), rect)
         images.append(pygame.transform.scale2x(pygame.transform.scale2x(image)))
 #        images.append(image)
     return images
 
-#def image_at(self, rectangle, colorkey = None):
-#        "Loads image from x,y,x+offset,y+offset"
-#        rect = pygame.Rect(rectangle)
-#        image = pygame.Surface(rect.size).convert()
-#        image.blit(self.sheet, (0, 0), rect)
-#        if colorkey is not None:
-#            if colorkey is -1:
-#                colorkey = image.get_at((0,0))
-#            image.set_colorkey(colorkey, pygame.RLEACCEL)
-#        return image
-#    # Load a whole bunch of images and return them as a list
-#def images_at(self, rects, colorkey = None):
-#    "Loads multiple images, supply a list of coordinates" 
-#    return [self.image_at(rect, colorkey) for rect in rects]
-#
-#rects = [pygame.Rect(x, 0,  16, 16) for x in range(0, 128)]
+
 
 #sheet = import_image("first_Experiment.png")
 #images = get_strip(sheet, pygame.Rect(0, 0, 16, 16))
@@ -70,8 +55,8 @@ class TestRun(App):
         self.sheet = import_image("first_Experiment.png")
         self.images = get_strip(self.sheet, pygame.Rect(0, 0, 16, 16))
         self.sprites = Sequencer(*self.images)
-#        self.surface = self.sprites()
-        self.surface = self.sheet
+        self.surface = self.sprites()
+#        self.surface = self.sheet
         self.rect = self.surface.get_rect()
         
     def handle_events(self,event):
