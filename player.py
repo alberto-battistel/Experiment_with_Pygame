@@ -47,33 +47,27 @@ class SpriteSheet():
         return images
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self,  settings):
         super().__init__()
         self.rect = pygame.Rect(0, 0, 16, 16)
         self.sprites = Sequencer(*SpriteSheet("first_Experiment.png",  self.rect).get_strip())
         self.surface = self.sprites() 
         self.rect = self.rect = self.surface.get_rect()
-        self.settings = None
+        self.settings = settings
+        self.bounding_box = pygame.Rect(0, 0,  *self.settings['screen_size'])
         
     def handle_events(self,  event):
         if event.type == KEYDOWN:
             if event.key == K_a:
                 self.rect.move_ip(-20, 0)
-                if self.rect.left < 0:
-                    self.rect.left = 0
             elif event.key == K_d:
                 self.rect.move_ip(20, 0)
-                if self.rect.right > self.settings['screen_size'][0]:
-                    self.rect.right = self.settings['screen_size'][0]
             elif event.key == K_w:
                 self.rect.move_ip(0, -20)
-                if self.rect.top < 0:
-                    self.rect.top = 0
             elif event.key == K_s:
                 self.rect.move_ip(0, 20)
-                if self.rect.bottom > self.settings['screen_size'][1]:
-                    self.rect.bottom = self.settings['screen_size'][1]
-    
+        self.rect.clamp_ip(self.bounding_box)
+        
     def update(self):
         self.surface = self.sprites()
         
@@ -82,11 +76,8 @@ class TestRun(App):
     def __init__(self):
         super().__init__()
         self.settings['FPS'] = 30
-        self.player = Player()
+        self.player = Player(self.settings)
         self.player.settings = self.settings
-#        Sequencer(*SpriteSheet("first_Experiment.png",  pygame.Rect(0, 0, 16, 16)).get_strip())
-#        self.surface = self.sprites()
-#        self.rect = self.surface.get_rect()
         
     def handle_events(self,event):
         self.player.handle_events(event)
