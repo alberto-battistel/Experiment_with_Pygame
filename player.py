@@ -14,49 +14,51 @@ class Sequencer():
         index = 0
         while True:
             yield self.sprites[index]
+            yield self.sprites[index]
+            yield self.sprites[index]
             index = (index+1)%self.max_length
 
     def __call__(self):
         self.actual_item = next(self.generator)
         return self.actual_item
         
-
-def sprite_loader(resource):
-    return pygame.image.load(resource).convert_alpha()
-        
-        
-ex = Sequencer("1", "2", "3")
-
-def import_image(asset_name):
-    sheet = pygame.image.load(asset_name).convert_alpha()
-    return sheet
+class SpriteSheet():
+    def __init__(self,  asset_name,  rect):
+        self.asset_name = asset_name
+        self.rect = rect
+        self.sheet = self.import_image()
+        self.images = self.get_strip()
     
-def get_strip(sheet, rect):
-    sheet_width = sheet.get_width()
-    step = rect.width
-    images = []
-    for x_position in range(0,  sheet_width, step):
-        rect.x = x_position
-        image = pygame.Surface(rect.size,  pygame.SRCALPHA)
-        image.blit(sheet, (0, 0), rect)
-        images.append(pygame.transform.scale2x(pygame.transform.scale2x(image)))
-#        images.append(image)
-    return images
+    
+#    def sprite_loader(self):
+#        return pygame.image.load(self.resource).convert_alpha()
+            
+    def import_image(self):
+        sheet = pygame.image.load(self.asset_name).convert_alpha()
+        return sheet
+    
+    def get_strip(self):
+        sheet_width = self.sheet.get_width()
+        step = self.rect.width
+        images = []
+        for x_position in range(0,  sheet_width, step):
+            self.rect.x = x_position
+            image = pygame.Surface(self.rect.size,  pygame.SRCALPHA)
+            image.blit(self.sheet, (0, 0), self.rect)
+            images.append(pygame.transform.scale2x(pygame.transform.scale2x(image)))
+    #        images.append(image)
+        return images
 
+#sprites = SpriteSheet("first_Experiment.png",  pygame.Rect(0, 0, 16, 16))
 
-
-#sheet = import_image("first_Experiment.png")
-#images = get_strip(sheet, pygame.Rect(0, 0, 16, 16))
-#sprites = Sequencer(*images)
+#class Player
 
 class TestRun(App):
     def __init__(self):
         super().__init__()
-        self.sheet = import_image("first_Experiment.png")
-        self.images = get_strip(self.sheet, pygame.Rect(0, 0, 16, 16))
-        self.sprites = Sequencer(*self.images)
+        self.settings['FPS'] = 30
+        self.sprites = Sequencer(*SpriteSheet("first_Experiment.png",  pygame.Rect(0, 0, 16, 16)).get_strip())
         self.surface = self.sprites()
-#        self.surface = self.sheet
         self.rect = self.surface.get_rect()
         
     def handle_events(self,event):
@@ -77,10 +79,9 @@ class TestRun(App):
                 self.rect.move_ip(0, 20)
                 if self.rect.bottom > self.settings['screen_size'][1]:
                     self.rect.bottom = self.settings['screen_size'][1]
-                    
-                    
-#    def update(self):
-#        self.surface = self.sprites()
+                                        
+    def update(self):
+        self.surface = self.sprites()
             
     def render(self):
         self.screen.blit(self.surface, self.rect)
