@@ -85,7 +85,7 @@ class Player(pygame.sprite.Sprite):
         self.position = vec(0, 0)
         self.physics = Physics()
         
-    def handle_events(self,  _):
+    def handle_events(self, _):
         self.direction = vec(0, 0)
         event = pygame.key.get_pressed()
         
@@ -98,17 +98,6 @@ class Player(pygame.sprite.Sprite):
         elif event[K_s]:
             self.direction = vec(0, 1)
         
-#        if event.type == KEYDOWN:
-#            if event.key == K_a:
-#                self.direction = vec(-1, 0)
-#            elif event.key == K_d:
-#                self.direction = vec(1, 0)
-#            elif event.key == K_w:
-#                self.direction = vec(0, -1)
-#            elif event.key == K_s:
-#                self.direction = vec(0, 1)
-        
-                
     def move(self):
         delta = 1
         self.position += self.physics.move(self.direction,  delta)
@@ -116,7 +105,6 @@ class Player(pygame.sprite.Sprite):
     
     def update(self):
         self.move()
-        print(self.position)
         self.rect.clamp_ip(self.bounding_box)
         self.position = self.rect.center
         self.surface = self.sprites()
@@ -132,6 +120,7 @@ class TestRun(App):
         
     def handle_events(self,event):
         self.player.handle_events(event)
+        print(event)
                                         
     def update(self):
         self.player.update()
