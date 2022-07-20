@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+#from math import round
 
 import pygame
 from pygame.locals import *
@@ -61,7 +62,7 @@ class Physics:
     vel : vec = vec(0, 0)
     acc : vec = vec(0, 0)
     
-    def move(self,  direction,  delta):
+    def move(self,  direction,  delta=1):
         self.acc = vec(0,  self.gravity)
         self.acc += self.acceleration * (direction  * self.movement.elementwise())
         self.acc += self.vel * self.friction
@@ -88,20 +89,22 @@ class Player(pygame.sprite.Sprite):
     def handle_events(self, _):
         self.direction = vec(0, 0)
         event = pygame.key.get_pressed()
-        
+ 
         if event[K_a]:
-            self.direction = vec(-1, 0)
+            self.direction += vec(-1, 0)
         elif event[K_d]:
-            self.direction = vec(1, 0)
-        elif event[K_w]:
-            self.direction = vec(0, -1)
-        elif event[K_s]:
-            self.direction = vec(0, 1)
+            self.direction += vec(1, 0)
+            
+        if event[K_w]:
+            self.direction += vec(0, -1)
+        if event[K_s]:
+            self.direction += vec(0, 1)
         
     def move(self):
-        delta = 1
-        self.position += self.physics.move(self.direction,  delta)
-        self.rect.center = self.position
+        delta_position = self.physics.move(self.direction)
+        self.position += delta_position
+        self.rect.center = vec(round(self.position.x), round(self.position.y))  
+        print(self.rect.center)
     
     def update(self):
         self.move()
@@ -120,10 +123,11 @@ class TestRun(App):
         
     def handle_events(self,event):
         self.player.handle_events(event)
-        print(event)
+#        print(event)
                                         
     def update(self):
         self.player.update()
+#        print(self.player.position)
             
     def render(self):
         self.screen.blit(self.player.surface, self.player.rect)
