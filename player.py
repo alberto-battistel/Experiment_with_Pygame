@@ -1,9 +1,12 @@
+from dataclasses import dataclass
+
 import pygame
 from pygame.locals import *
 from pygame import Vector2 as vec
 
 from main import App
 
+        
 
 class Sequencer():
     def __init__(self, *sprites):
@@ -48,9 +51,25 @@ class SpriteSheet():
     #        images.append(image)
         return images
 
-acceleration = 0.5
-friction = -0.12
-gravity = 0.5
+@dataclass
+class Physics:
+    acceleration : float = 0.5
+    friction : float = -0.12
+    gravity : float = 0.5
+    movement : vec = vec(1, 5)
+    
+    vel : vec = vec(0, 0)
+    acc : vec = vec(0, 0)
+    
+    def move(self,  direction,  delta):
+        self.acc = vec(0,  self.gravity)
+        self.acc += self.acceleration * (direction  * self.movement.elementwise())
+        self.acc += self.vel * self.friction
+        self.vel += self.acc * delta
+        position = self.vel + 0.5*self.acc * delta
+        
+        return position
+
 
 class Player(pygame.sprite.Sprite):
     
@@ -63,9 +82,8 @@ class Player(pygame.sprite.Sprite):
         self.settings = settings
         self.bounding_box = pygame.Rect(0, 0,  *self.settings['screen_size'])
         self.direction = vec(0, 0)
-        self.vel = vec(0, 0)
-        self.acc = vec(0, 0)
-        self.pos = vec(0, 0)
+        self.position = vec(0, 0)
+        self.physics = Physics()
         
     def handle_events(self,  _):
         self.direction = vec(0, 0)
@@ -76,7 +94,7 @@ class Player(pygame.sprite.Sprite):
         elif event[K_d]:
             self.direction = vec(1, 0)
         elif event[K_w]:
-            self.direction = vec(0, -5)
+            self.direction = vec(0, -1)
         elif event[K_s]:
             self.direction = vec(0, 1)
         
@@ -92,18 +110,15 @@ class Player(pygame.sprite.Sprite):
         
                 
     def move(self):
-        self.acc = vec(0,  gravity)
-        self.acc += acceleration * self.direction
-        self.acc += self.vel * friction
-        self.vel += self.acc
-        self.pos += self.vel + 0.5*self.acc
-        
-        self.rect.center = self.pos
+        delta = 1
+        self.position += self.physics.move(self.direction,  delta)
+        self.rect.center = self.position
     
     def update(self):
         self.move()
+        print(self.position)
         self.rect.clamp_ip(self.bounding_box)
-        self.pos = self.rect.center
+        self.position = self.rect.center
         self.surface = self.sprites()
         
                     
@@ -113,7 +128,7 @@ class TestRun(App):
         self.settings['FPS'] = 30
         self.player = Player(self.settings)
         self.player.settings = self.settings
-        self.player.pos = vec(*[p/2 for p in self.settings['screen_size']])
+        self.player.position = vec(*[p/2 for p in self.settings['screen_size']])
         
     def handle_events(self,event):
         self.player.handle_events(event)
