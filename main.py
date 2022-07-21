@@ -2,7 +2,7 @@ import pygame
 
 pygame.init()
 
-settings = {'screen_size': (600, 400),
+settings = {'screen_size': (1200, 800),
             'FPS': 60,
             }
             

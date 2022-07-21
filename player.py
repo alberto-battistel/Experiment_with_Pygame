@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-#from math import round
+from math import copysign
 
 import pygame
 from pygame.locals import *
@@ -7,7 +7,7 @@ from pygame import Vector2 as vec
 
 from main import App
 
-        
+sign = lambda x: copysign(1, x)
 
 class Sequencer():
     def __init__(self, *sprites):
@@ -54,20 +54,30 @@ class SpriteSheet():
 
 @dataclass
 class Physics:
-    acceleration : float = 0.5
-    friction : float = -0.12
-    gravity : float = 0.5
-    movement : vec = vec(1, 5)
+    friction : float = 5
+    gravity : float = 90
+    movement : vec = vec(200, 350)
+    max_velocity : vec = vec(20, 30)
     
     vel : vec = vec(0, 0)
     acc : vec = vec(0, 0)
     
+    def clamp(self,  vector):
+        if abs(vector.x) > self.max_velocity.x:
+            vector.x = sign(vector.x)*self.max_velocity.x
+        if abs(vector.y) > self.max_velocity.y:
+            vector.y = sign(vector.y)*self.max_velocity.y
+        return vector
+            
     def move(self,  direction,  delta=1):
         self.acc = vec(0,  self.gravity)
-        self.acc += self.acceleration * (direction  * self.movement.elementwise())
-        self.acc += self.vel * self.friction
+        self.acc += (direction * self.movement.elementwise())
+        self.acc -= self.vel * self.friction
         self.vel += self.acc * delta
+        self.vel = self.clamp(self.vel)
         position = self.vel + 0.5*self.acc * delta
+        
+        print(self.vel)
         
         return position
 
@@ -92,7 +102,7 @@ class Player(pygame.sprite.Sprite):
  
         if event[K_a]:
             self.direction += vec(-1, 0)
-        elif event[K_d]:
+        if event[K_d]:
             self.direction += vec(1, 0)
             
         if event[K_w]:
@@ -101,10 +111,9 @@ class Player(pygame.sprite.Sprite):
             self.direction += vec(0, 1)
         
     def move(self):
-        delta_position = self.physics.move(self.direction)
+        delta_position = self.physics.move(self.direction,  delta=1/self.settings['FPS'])
         self.position += delta_position
         self.rect.center = vec(round(self.position.x), round(self.position.y))  
-        print(self.rect.center)
     
     def update(self):
         self.move()
