@@ -54,10 +54,10 @@ class SpriteSheet():
 
 @dataclass
 class Physics:
-    friction : float = 5
-    gravity : float = 90
-    movement : vec = vec(200, 350)
-    max_velocity : vec = vec(20, 30)
+    friction : float = -5
+    gravity : float = 200
+    movement : vec = vec(800, 800)
+    max_velocity : vec = vec(200, 200)
     
     vel : vec = vec(0, 0)
     acc : vec = vec(0, 0)
@@ -69,18 +69,21 @@ class Physics:
             vector.y = sign(vector.y)*self.max_velocity.y
         return vector
             
-    def move(self,  direction,  delta=1):
+    def calculate_velocity(self,  direction,  delta=1):
         self.acc = vec(0,  self.gravity)
         self.acc += (direction * self.movement.elementwise())
-        self.acc -= self.vel * self.friction
-        self.vel += self.acc * delta
+        self.acc += self.vel * self.friction
+        self.vel += 0.5 * self.acc * delta #averaged new velocity
         self.vel = self.clamp(self.vel)
-        position = self.vel + 0.5*self.acc * delta
-        
+
         print(self.vel)
         
-        return position
-
+        return self.vel
+        
+    def move(self,  direction,  delta=1):
+        velocity = self.calculate_velocity(direction,  delta)
+        delta_position = velocity * delta 
+        return delta_position    
 
 class Player(pygame.sprite.Sprite):
     
