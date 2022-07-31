@@ -2,7 +2,7 @@
   "header": {
     "comment": "eric project file for project Experiment with pygame",
     "copyright": "Copyright (C) 2022 Alberto Battistel, ",
-    "saved": "2022-06-28, 23:03:35"
+    "saved": "2022-07-31, 23:58:09"
   },
   "project": {
     "AUTHOR": "Alberto Battistel",
@@ -70,7 +70,10 @@
     "RESOURCES": [],
     "SOURCES": [
       "FSM.py",
-      "main.py"
+      "level.py",
+      "main.py",
+      "player.py",
+      "test_events.py"
     ],
     "SPELLEXCLUDES": "",
     "SPELLLANGUAGE": "en_US",
