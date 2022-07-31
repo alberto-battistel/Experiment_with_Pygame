@@ -10,13 +10,13 @@ from main import App
 sign = lambda x: copysign(1, x)
 
 keys_mapping = {pygame.K_a: vec(-1,  0),
-                            pygame.K_d: vec(0,  1), 
-                            pygame.K_w: vec(0,  1), 
-                            pygame.K_s: vec(0,  -1),
+                            pygame.K_d: vec(1,  0), 
+                            pygame.K_w: vec(0,  -1), 
+                            pygame.K_s: vec(0,  1),
 #                            pygame.K_SPACE: lambda: print("space"),
                             pygame.K_LEFT: vec(-1,  0), 
-                            pygame.K_RIGHT: vec(0,  1), 
-                            pygame.K_UP: vec(0,  1), 
+                            pygame.K_RIGHT: vec(1,  0), 
+                            pygame.K_UP: vec(0,  -1), 
                             pygame.K_DOWN: vec(0,  -1), }
    
 
@@ -102,8 +102,8 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.rect = pygame.Rect(0, 0, 16, 16)
         self.sprites = Sequencer(*SpriteSheet("first_Experiment.png",  self.rect).get_strip())
-        self.surface = self.sprites() 
-        self.rect = self.surface.get_rect()
+        self.image = self.sprites() 
+        self.rect = self.image.get_rect()
         self.settings = settings
         self.bounding_box = pygame.Rect(0, 0,  *self.settings['screen_size'])
         self.direction = vec(0, 0)
@@ -130,7 +130,7 @@ class Player(pygame.sprite.Sprite):
         self.move()
         self.rect.clamp_ip(self.bounding_box)
         self.position = self.rect.center
-        self.surface = self.sprites()
+        self.image = self.sprites()
         
                     
 class TestRun(App):
@@ -151,7 +151,7 @@ class TestRun(App):
 #        print(self.player.position)
             
     def render(self):
-        self.screen.blit(self.player.surface, self.player.rect)
+        self.screen.blit(self.player.image, self.player.rect)
 
 
 game = TestRun()
