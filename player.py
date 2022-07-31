@@ -2,12 +2,22 @@ from dataclasses import dataclass
 from math import copysign
 
 import pygame
-from pygame.locals import *
+#from pygame.locals import *
 from pygame import Vector2 as vec
 
 from main import App
 
 sign = lambda x: copysign(1, x)
+
+keys_mapping = {pygame.K_a: vec(-1,  0),
+                            pygame.K_d: vec(0,  1), 
+                            pygame.K_w: vec(0,  1), 
+                            pygame.K_s: vec(0,  -1),
+#                            pygame.K_SPACE: lambda: print("space"),
+                            pygame.K_LEFT: vec(-1,  0), 
+                            pygame.K_RIGHT: vec(0,  1), 
+                            pygame.K_UP: vec(0,  1), 
+                            pygame.K_DOWN: vec(0,  -1), }
 
 class Sequencer():
     def __init__(self, *sprites):
@@ -99,19 +109,25 @@ class Player(pygame.sprite.Sprite):
         self.position = vec(0, 0)
         self.physics = Physics()
         
-    def handle_events(self, _):
-        self.direction = vec(0, 0)
-        event = pygame.key.get_pressed()
- 
-        if event[K_a]:
-            self.direction += vec(-1, 0)
-        if event[K_d]:
-            self.direction += vec(1, 0)
+    def handle_inputs(self, inputs):
+        direction = vec(0, 0)
+        
+        for key,  value in keys_mapping.items():
+            if inputs[key]:
+                direction += value
+        
+        self.direction = direction
+#        if inputs[K_a]:
+#            self.direction += vec(-1, 0)
+#        if inputs[K_d]:
+#            self.direction += vec(1, 0)
+#            
+#        if inputs[K_w]:
+#            self.direction += vec(0, -1)
+#        if inputs[K_s]:
+#            self.direction += vec(0, 1)
             
-        if event[K_w]:
-            self.direction += vec(0, -1)
-        if event[K_s]:
-            self.direction += vec(0, 1)
+        return self.direction
         
     def move(self):
         delta_position = self.physics.move(self.direction,  delta=1/self.settings['FPS'])
@@ -133,9 +149,8 @@ class TestRun(App):
         self.player.settings = self.settings
         self.player.position = vec(*[p/2 for p in self.settings['screen_size']])
         
-    def handle_events(self,event):
-        self.player.handle_events(event)
-#        print(event)
+    def handle_inputs(self, inputs):
+        self.player.handle_inputs(inputs)
                                         
     def update(self):
         self.player.update()
