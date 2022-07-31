@@ -18,6 +18,7 @@ keys_mapping = {pygame.K_a: vec(-1,  0),
                             pygame.K_RIGHT: vec(0,  1), 
                             pygame.K_UP: vec(0,  1), 
                             pygame.K_DOWN: vec(0,  -1), }
+   
 
 class Sequencer():
     def __init__(self, *sprites):
@@ -117,15 +118,6 @@ class Player(pygame.sprite.Sprite):
                 direction += value
         
         self.direction = direction
-#        if inputs[K_a]:
-#            self.direction += vec(-1, 0)
-#        if inputs[K_d]:
-#            self.direction += vec(1, 0)
-#            
-#        if inputs[K_w]:
-#            self.direction += vec(0, -1)
-#        if inputs[K_s]:
-#            self.direction += vec(0, 1)
             
         return self.direction
         
@@ -145,6 +137,8 @@ class TestRun(App):
     def __init__(self):
         super().__init__()
         self.settings['FPS'] = 30
+        
+    def add_something(self):
         self.player = Player(self.settings)
         self.player.settings = self.settings
         self.player.position = vec(*[p/2 for p in self.settings['screen_size']])
@@ -161,5 +155,6 @@ class TestRun(App):
 
 
 game = TestRun()
+game.start()
 game.run()
 game.quit()

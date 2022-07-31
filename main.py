@@ -11,9 +11,16 @@ class App:
         pygame.init()
         
         self.settings = settings
-        self.screen = pygame.display.set_mode(settings['screen_size'])
-        self.clock = pygame.time.Clock()
+        
+    def add_something(self):
+        pass
+        
+    def start(self):
+        self.screen = pygame.display.set_mode(self.settings['screen_size'])
         self.running = True
+        self.clock = pygame.time.Clock()
+        self.add_something()
+
     
     def set_caption(self):
         pygame.display.set_caption("FPS: {:.1f}".format(self.clock.get_fps()))
@@ -65,5 +72,6 @@ class App:
     
 if __name__ == '__main__':
     game = App()
+    game.start()
     game.run()
     game.quit()
