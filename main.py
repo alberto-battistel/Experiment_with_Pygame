@@ -21,9 +21,13 @@ class App:
     def set_background(self):
         self.screen.fill((220, 220, 220))
                 
-    def handle_events(self, event):
+    def handle_inputs(self, inputs):
         pass
-        
+    
+    def get_inputs(self):
+        self.inputs = pygame.key.get_pressed()
+        return self.inputs
+    
     def update(self):
         pass
         
@@ -42,8 +46,11 @@ class App:
             for event in events:
                 if event.type == pygame.QUIT:
                     self.running = False
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    self.running = False
                 
-                self.handle_events(event)
+            inputs = self.get_inputs()
+            self.handle_inputs(inputs)
             
             self.set_background()
             self.set_caption()
