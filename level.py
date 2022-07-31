@@ -39,11 +39,12 @@ class TestWorld:
         width = self.rect_size.x*self.map_size.x
         height = self.rect_size.y*self.map_size.y
         self.surface = pygame.Surface((width, height), pygame.SRCALPHA)
-        self.surface.fill((255, 0, 0, 128))
+#        self.surface.fill((255, 0, 0, 128))
         
     def make_block_type(self):
         self.block = pygame.Surface(self.rect_size)
         self.block.fill(color)
+        self.rects = []
     
     def generate_level(self):
         for row_number, row in enumerate(self.map):
@@ -51,6 +52,7 @@ class TestWorld:
                 position = [col_number * self.rect_size.x,  row_number * self.rect_size.y]
                 if col == 1:
                     print(position)
+                    self.rects.append(self.rect.move(position))
                     self.surface.blit(self.block,  position)
                     
 
