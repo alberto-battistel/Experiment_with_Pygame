@@ -65,7 +65,6 @@ class SpriteSheet():
         return images
 
 
-@dataclass
 class Physics:
     friction : float = -5
     gravity : float = 200
@@ -75,8 +74,8 @@ class Physics:
     vel : vec = vec(0, 0)
     acc : vec = vec(0, 0)
     
-    def __init__(self,  sprite_as_list, group : pygame.sprite.Group):
-        self.sprite = sprite_as_list[0]
+    def __init__(self, sprite : pygame.sprite.Sprite, group : pygame.sprite.Group):
+        self.sprite = sprite
         self.group = group
         
     
@@ -136,7 +135,7 @@ class Player(pygame.sprite.Sprite):
         self.bounding_box = pygame.Rect(0, 0,  *self.settings['screen_size'])
         self.direction = vec(0, 0)
         self._position = vec(0, 0)
-        self.physics = Physics([self],  group)
+        self.physics = Physics(self,  group)
         
     def handle_inputs(self, inputs):
         direction = vec(0, 0)
@@ -158,18 +157,12 @@ class Player(pygame.sprite.Sprite):
         value = vec(round(value.x), round(value.y))
         self._position = value
         self.rect.center = value
-#        print(value)    
         
     def move(self):
-#        delta_position = self.physics.calculate_movement(self.direction,  delta=1/self.settings['FPS'])
-#        self.position += delta_position
-#        self.rect.center = vec(round(self.position.x), round(self.position.y))  
-        
         self.physics.move_collide(self.direction,  delta=1/self.settings['FPS'])
     
     def update(self):
         self.move()
-#        self.physics.check_collisions(group)
         self.rect.clamp_ip(self.bounding_box)
         self.position = vec(self.rect.center)
         self.image = self.sprites()
