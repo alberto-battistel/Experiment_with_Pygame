@@ -66,6 +66,8 @@ class SpriteSheet():
 
 @dataclass
 class Physics:
+    sprite : any
+    
     friction : float = -5
     gravity : float = 200
     movement : vec = vec(800, 800)
@@ -73,6 +75,7 @@ class Physics:
     
     vel : vec = vec(0, 0)
     acc : vec = vec(0, 0)
+    
     
     def clamp(self,  vector):
         if abs(vector.x) > self.max_velocity.x:
@@ -96,6 +99,10 @@ class Physics:
         velocity = self.calculate_velocity(direction,  delta)
         delta_position = velocity * delta 
         return delta_position    
+        
+    def check_collisions(self,  group):
+        for tile in pygame.sprite.spritecollide(self.sprite, group, dokill=False):
+            print("collision")
 
 class Player(pygame.sprite.Sprite):
     
@@ -109,7 +116,7 @@ class Player(pygame.sprite.Sprite):
         self.bounding_box = pygame.Rect(0, 0,  *self.settings['screen_size'])
         self.direction = vec(0, 0)
         self.position = vec(0, 0)
-        self.physics = Physics()
+        self.physics = Physics(self)
         
     def handle_inputs(self, inputs):
         direction = vec(0, 0)
@@ -127,8 +134,9 @@ class Player(pygame.sprite.Sprite):
         self.position += delta_position
         self.rect.center = vec(round(self.position.x), round(self.position.y))  
     
-    def update(self):
+    def update(self,  group):
         self.move()
+        self.physics.check_collisions(group)
         self.rect.clamp_ip(self.bounding_box)
         self.position = self.rect.center
         self.image = self.sprites()
@@ -150,7 +158,7 @@ class TestRun(App):
         self.player.handle_inputs(inputs)
                                         
     def update(self):
-        self.player.update()
+        self.player.update(self.level.tiles)
 #        print(self.player.position)
             
     def render(self):
