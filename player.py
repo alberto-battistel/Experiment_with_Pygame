@@ -6,6 +6,7 @@ import pygame
 from pygame import Vector2 as vec
 
 from main import App
+import level
 
 sign = lambda x: copysign(1, x)
 
@@ -143,6 +144,8 @@ class TestRun(App):
         self.player.settings = self.settings
         self.player.position = vec(*[p/2 for p in self.settings['screen_size']])
         
+        self.level = level.TestWorld(rect_size=level.rect_size, map=level.map)
+        
     def handle_inputs(self, inputs):
         self.player.handle_inputs(inputs)
                                         
@@ -151,6 +154,7 @@ class TestRun(App):
 #        print(self.player.position)
             
     def render(self):
+        self.screen.blit(self.level.surface,  (0, 0))
         self.screen.blit(self.player.image, self.player.rect)
 
 
