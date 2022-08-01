@@ -64,10 +64,9 @@ class SpriteSheet():
     #        images.append(image)
         return images
 
+
 @dataclass
 class Physics:
-    sprite : any
-    
     friction : float = -5
     gravity : float = 200
     movement : vec = vec(800, 800)
@@ -76,6 +75,10 @@ class Physics:
     vel : vec = vec(0, 0)
     acc : vec = vec(0, 0)
     
+    def __init__(self,  sprite_as_list, group : pygame.sprite.Group):
+        self.sprite = sprite_as_list[0]
+        self.group = group
+        
     
     def clamp(self,  vector):
         if abs(vector.x) > self.max_velocity.x:
@@ -91,22 +94,39 @@ class Physics:
         self.vel += 0.5 * self.acc * delta #averaged new velocity
         self.vel = self.clamp(self.vel)
 
-        print(self.vel)
+#        print(self.vel)
         
         return self.vel
         
-    def move(self,  direction,  delta=1):
+    def calculate_movement(self,  direction,  delta=1):
         velocity = self.calculate_velocity(direction,  delta)
         delta_position = velocity * delta 
         return delta_position    
         
-    def check_collisions(self,  group):
-        for tile in pygame.sprite.spritecollide(self.sprite, group, dokill=False):
-            print("collision")
-
+    def check_collisions(self):
+#        for tile in pygame.sprite.spritecollide(self.sprite, self.group, dokill=False):
+#            print("collision")
+        
+        return pygame.sprite.spritecollide(self.sprite, self.group, dokill=False)
+            
+    def move_collide(self,  direction,  delta):
+        delta_position = self.calculate_movement(direction,  delta)
+        # x direction
+        new_position = vec(self.sprite.position.x + delta_position.x,  self.sprite.position.y)
+        self.sprite.position = new_position
+        if self.check_collisions():
+            print("x collision")
+        
+        # y direction
+        new_position = vec(self.sprite.position.x, self.sprite.position.y + delta_position.y)
+        self.sprite.position = new_position
+        if self.check_collisions():
+            print("y collision")
+            
+            
 class Player(pygame.sprite.Sprite):
     
-    def __init__(self,  settings):
+    def __init__(self,  settings,  group):
         super().__init__()
         self.rect = pygame.Rect(0, 0, 16, 16)
         self.sprites = Sequencer(*SpriteSheet("first_Experiment.png",  self.rect).get_strip())
@@ -115,8 +135,8 @@ class Player(pygame.sprite.Sprite):
         self.settings = settings
         self.bounding_box = pygame.Rect(0, 0,  *self.settings['screen_size'])
         self.direction = vec(0, 0)
-        self.position = vec(0, 0)
-        self.physics = Physics(self)
+        self._position = vec(0, 0)
+        self.physics = Physics([self],  group)
         
     def handle_inputs(self, inputs):
         direction = vec(0, 0)
@@ -128,37 +148,49 @@ class Player(pygame.sprite.Sprite):
         self.direction = direction
             
         return self.direction
+    
+    @property
+    def position(self):
+        return self._position
+    
+    @position.setter
+    def position(self,  value : vec):
+        value = vec(round(value.x), round(value.y))
+        self._position = value
+        self.rect.center = value
+#        print(value)    
         
     def move(self):
-        delta_position = self.physics.move(self.direction,  delta=1/self.settings['FPS'])
-        self.position += delta_position
-        self.rect.center = vec(round(self.position.x), round(self.position.y))  
+#        delta_position = self.physics.calculate_movement(self.direction,  delta=1/self.settings['FPS'])
+#        self.position += delta_position
+#        self.rect.center = vec(round(self.position.x), round(self.position.y))  
+        
+        self.physics.move_collide(self.direction,  delta=1/self.settings['FPS'])
     
-    def update(self,  group):
+    def update(self):
         self.move()
-        self.physics.check_collisions(group)
+#        self.physics.check_collisions(group)
         self.rect.clamp_ip(self.bounding_box)
-        self.position = self.rect.center
+        self.position = vec(self.rect.center)
         self.image = self.sprites()
         
                     
 class TestRun(App):
     def __init__(self):
         super().__init__()
-        self.settings['FPS'] = 30
+        self.settings['FPS'] = 60
         
     def add_something(self):
-        self.player = Player(self.settings)
+        self.level = level.TestWorld(rect_size=level.rect_size, map=level.map)
+        self.player = Player(self.settings,  self.level.tiles)
         self.player.settings = self.settings
         self.player.position = vec(*[p/2 for p in self.settings['screen_size']])
-        
-        self.level = level.TestWorld(rect_size=level.rect_size, map=level.map)
         
     def handle_inputs(self, inputs):
         self.player.handle_inputs(inputs)
                                         
     def update(self):
-        self.player.update(self.level.tiles)
+        self.player.update()
 #        print(self.player.position)
             
     def render(self):
