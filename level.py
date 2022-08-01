@@ -88,21 +88,22 @@ class TestWorld:
                     self.surface.blit(tile.image,  position)
                     
 
-class TestRun(App):
-    def __init__(self):
-        super().__init__()
-        self.settings = {'screen_size': (16*32, 16*32),
-                                'FPS': 60,
-                                }
-                                
-    def add_something(self):
-        self.level = TestWorld(rect_size=rect_size, map=map)
-                 
-    def render(self):
-        self.screen.blit(self.level.surface,  (0, 0))
-        
-
-game = TestRun()
-game.start()
-game.run()
-game.quit()
+if __name__ == "__main__":
+    
+    class TestRun(App):
+        def __init__(self):
+            super().__init__()
+            self.settings = {'screen_size': (16*32, 16*32),
+                                    'FPS': 60,
+                                    }
+                                    
+        def add_something(self):
+            self.level = TestWorld(rect_size=rect_size, map=map)
+                     
+        def render(self):
+            self.screen.blit(self.level.surface,  (0, 0))
+    
+    game = TestRun()
+    game.start()
+    game.run()
+    game.quit()
