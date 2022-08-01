@@ -114,13 +114,20 @@ class Physics:
         new_position = vec(self.sprite.position.x + delta_position.x,  self.sprite.position.y)
         self.sprite.position = new_position
         if self.check_collisions():
-            print("x collision")
+            if delta_position.x > 0:
+                print("right collision")
+            elif delta_position.x < 0:
+                print("left collision")
+            
         
         # y direction
         new_position = vec(self.sprite.position.x, self.sprite.position.y + delta_position.y)
         self.sprite.position = new_position
         if self.check_collisions():
-            print("y collision")
+            if delta_position.y > 0:
+                print("down collision")
+            elif delta_position.y < 0:
+                print("up collision")
             
             
 class Player(pygame.sprite.Sprite):
@@ -171,7 +178,9 @@ class Player(pygame.sprite.Sprite):
 class TestRun(App):
     def __init__(self):
         super().__init__()
-        self.settings['FPS'] = 60
+        self.settings = {'screen_size': (16*32, 16*32),
+                                    'FPS': 60,
+                                    }
         
     def add_something(self):
         self.level = level.TestWorld(rect_size=level.rect_size, map=level.map)
