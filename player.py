@@ -106,10 +106,10 @@ class Physics:
         return pygame.sprite.spritecollide(self.sprite, self.group, dokill=False)
             
     def move_collide(self,  direction,  delta):
-        collision = {"right": [False, None], 
-                            "left": [False, None], 
-                            "up": [False, None], 
-                            "down": [False, None], }
+        collision = {"right": None, 
+                            "left": None, 
+                            "top": None, 
+                            "bottom": None, }
         delta_position = self.calculate_movement(direction,  delta)
         # x direction
         new_position = vec(self.sprite.position.x + delta_position.x,  self.sprite.position.y)
@@ -119,10 +119,10 @@ class Physics:
             for coll in collided:
                 if delta_position.x > 0:
     #                print("right collision")
-                    collision["right"] = [True,  coll.rect.left]
+                    collision["right"] = coll.rect.left
                 elif delta_position.x < 0:
     #                print("left collision")
-                    collision["left"] = [True,  coll.rect.right]
+                    collision["left"] = coll.rect.right
             
         # y direction
         new_position = vec(self.sprite.position.x, self.sprite.position.y + delta_position.y)
@@ -132,10 +132,10 @@ class Physics:
             for coll in collided:
                 if delta_position.y > 0:
     #                print("down collision")
-                    collision["down"] = [True,  coll.rect.top]
+                    collision["bottom"] = coll.rect.top
                 elif delta_position.y < 0:
     #                print("up collision")
-                    collision["up"] = [True,  coll.rect.bottom]
+                    collision["top"] = coll.rect.bottom
         
         return collision
             
@@ -166,7 +166,7 @@ class Player(pygame.sprite.Sprite):
     
     @property
     def position(self):
-        return self._position
+        return vec(self.rect.center)
     
     @position.setter
     def position(self,  value : vec):
@@ -175,9 +175,12 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = value
         
     def move(self):
-        collision = self.physics.move_collide(self.direction,  delta=1/self.settings['FPS'])
-        print(collision)
-    
+        self.collision = self.physics.move_collide(self.direction,  delta=1/self.settings['FPS'])
+        print(self.collision)
+        for key, value in game.player.collision.items():
+            if value:
+                setattr(self.rect, key, value)
+                
     def update(self):
         self.move()
         self.rect.clamp_ip(self.bounding_box)
