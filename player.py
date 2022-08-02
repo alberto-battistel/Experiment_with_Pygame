@@ -123,7 +123,11 @@ class Physics:
                 elif delta_position.x < 0:
     #                print("left collision")
                     collision["left"] = coll.rect.right
-            
+        
+        for key, value in collision.items():
+            if value:
+                setattr(self.sprite.rect, key, value)
+        
         # y direction
         new_position = vec(self.sprite.position.x, self.sprite.position.y + delta_position.y)
         self.sprite.position = new_position
@@ -136,6 +140,10 @@ class Physics:
                 elif delta_position.y < 0:
     #                print("up collision")
                     collision["top"] = coll.rect.bottom
+        
+        for key, value in collision.items():
+            if value:
+                setattr(self.sprite.rect, key, value)
         
         return collision
             
@@ -177,9 +185,9 @@ class Player(pygame.sprite.Sprite):
     def move(self):
         self.collision = self.physics.move_collide(self.direction,  delta=1/self.settings['FPS'])
         print(self.collision)
-        for key, value in game.player.collision.items():
-            if value:
-                setattr(self.rect, key, value)
+#        for key, value in game.player.collision.items():
+#            if value:
+#                setattr(self.rect, key, value)
                 
     def update(self):
         self.move()
@@ -192,7 +200,7 @@ class TestRun(App):
     def __init__(self):
         super().__init__()
         self.settings = {'screen_size': (16*32, 16*32),
-                                    'FPS': 60,
+                                    'FPS': 30,
                                     }
         
     def add_something(self):
