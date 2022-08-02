@@ -67,8 +67,8 @@ class SpriteSheet():
 
 class Physics:
     friction : float = -5
-    gravity : float = 200
-    movement : vec = vec(800, 800)
+    gravity : float = 800
+    movement : vec = vec(1200, 3200)
     max_velocity : vec = vec(200, 200)
     
     vel : vec = vec(0, 0)
@@ -111,6 +111,7 @@ class Physics:
                             "top": None, 
                             "bottom": None, }
         delta_position = self.calculate_movement(direction,  delta)
+        
         # x direction
         new_position = vec(self.sprite.position.x + delta_position.x,  self.sprite.position.y)
         self.sprite.position = new_position
@@ -118,10 +119,8 @@ class Physics:
         if collided:
             for coll in collided:
                 if delta_position.x > 0:
-    #                print("right collision")
                     collision["right"] = coll.rect.left
                 elif delta_position.x < 0:
-    #                print("left collision")
                     collision["left"] = coll.rect.right
         
         for key, value in collision.items():
@@ -135,10 +134,8 @@ class Physics:
         if collided:
             for coll in collided:
                 if delta_position.y > 0:
-    #                print("down collision")
                     collision["bottom"] = coll.rect.top
                 elif delta_position.y < 0:
-    #                print("up collision")
                     collision["top"] = coll.rect.bottom
         
         for key, value in collision.items():
@@ -184,15 +181,10 @@ class Player(pygame.sprite.Sprite):
         
     def move(self):
         self.collision = self.physics.move_collide(self.direction,  delta=1/self.settings['FPS'])
-        print(self.collision)
-#        for key, value in game.player.collision.items():
-#            if value:
-#                setattr(self.rect, key, value)
+#        print(self.collision)
                 
     def update(self):
         self.move()
-        self.rect.clamp_ip(self.bounding_box)
-        self.position = vec(self.rect.center)
         self.image = self.sprites()
         
                     
@@ -200,7 +192,7 @@ class TestRun(App):
     def __init__(self):
         super().__init__()
         self.settings = {'screen_size': (16*32, 16*32),
-                                    'FPS': 30,
+                                    'FPS': 60,
                                     }
         
     def add_something(self):
