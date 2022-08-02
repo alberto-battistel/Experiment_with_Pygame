@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+#from dataclasses import dataclass
 from math import copysign
 
 import pygame
@@ -102,33 +102,42 @@ class Physics:
         delta_position = velocity * delta 
         return delta_position    
         
-    def check_collisions(self):
-#        for tile in pygame.sprite.spritecollide(self.sprite, self.group, dokill=False):
-#            print("collision")
-        
+    def check_collisions(self):     
         return pygame.sprite.spritecollide(self.sprite, self.group, dokill=False)
             
     def move_collide(self,  direction,  delta):
+        collision = {"right": [False, None], 
+                            "left": [False, None], 
+                            "up": [False, None], 
+                            "down": [False, None], }
         delta_position = self.calculate_movement(direction,  delta)
         # x direction
         new_position = vec(self.sprite.position.x + delta_position.x,  self.sprite.position.y)
         self.sprite.position = new_position
-        if self.check_collisions():
-            if delta_position.x > 0:
-                print("right collision")
-            elif delta_position.x < 0:
-                print("left collision")
+        collided = self.check_collisions()
+        if collided:
+            for coll in collided:
+                if delta_position.x > 0:
+    #                print("right collision")
+                    collision["right"] = [True,  coll.rect.left]
+                elif delta_position.x < 0:
+    #                print("left collision")
+                    collision["left"] = [True,  coll.rect.right]
             
-        
         # y direction
         new_position = vec(self.sprite.position.x, self.sprite.position.y + delta_position.y)
         self.sprite.position = new_position
-        if self.check_collisions():
-            if delta_position.y > 0:
-                print("down collision")
-            elif delta_position.y < 0:
-                print("up collision")
-            
+        collided = self.check_collisions()
+        if collided:
+            for coll in collided:
+                if delta_position.y > 0:
+    #                print("down collision")
+                    collision["down"] = [True,  coll.rect.top]
+                elif delta_position.y < 0:
+    #                print("up collision")
+                    collision["up"] = [True,  coll.rect.bottom]
+        
+        return collision
             
 class Player(pygame.sprite.Sprite):
     
@@ -166,7 +175,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = value
         
     def move(self):
-        self.physics.move_collide(self.direction,  delta=1/self.settings['FPS'])
+        collision = self.physics.move_collide(self.direction,  delta=1/self.settings['FPS'])
+        print(collision)
     
     def update(self):
         self.move()
