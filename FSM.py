@@ -23,23 +23,34 @@ class State(Enum):
 
 
 class Condition():
-    def __init__(self,  *matching_events):
+    def __init__(self,  matching_events):
         self.matching_events = matching_events
     
-    def __call__(self,  inputs):
-        return any([inputs[me] for me in self.matching_events])
+    def __call__(self,  event_stack):
+        for key,  value in self.matching_events.items():
+            if isinstance(value,  list):
+                return any([event_stack[key][v] for v in value])
+            else:
+                return event_stack[key][value]
+#            event_stack[key][value]
+#        return any([inputs[me] for me in self.matching_events])
 
 
-is_on_ground = Condition(K_SPACE)
-is_jumping = Condition(K_w)
-is_moving = Condition(K_a,  K_d)
-is_ducking = Condition(K_s)
+is_on_ground = Condition({"inputs":K_SPACE})
+is_jumping = Condition({"inputs":K_w})
+is_moving = Condition({"inputs":[K_a,  K_d]})
+is_ducking = Condition({"inputs":K_s})
+
 
 class Stack:
-    stack = {"inputs": [], 
-                    "events": [],
-                   "game_events": [],  }
-                    
+    def __init__(self):
+        self.reset()
+    
+    def reset(self):
+        self.stack = {"inputs": [], 
+                        "events": [],
+                        "game_events": [],  }
+                        
     def post(self,  event):
         if isinstance(event, list):
             self.stack["events"] = event
@@ -47,6 +58,9 @@ class Stack:
             self.stack["inputs"] = event
         else:
             self.stack["game_events"] = event
+            
+        return self.stack
+
 
 class FiniteStateMachine():
     transitions_table = {State.Idle: [
@@ -116,9 +130,9 @@ class TestRun(App):
         self.stack = Stack()
     
     def handle_events(self, inputs,  events):
-
-        self.stack.post(inputs)
-        state = fsm.handle_event(inputs)
+        self.stack.reset()
+        event_stack = self.stack.post(inputs)
+        state = fsm.handle_event(event_stack)
         stack = [state.name for state in fsm.stack]
         
         self.state_to_render = self.font1.render(state, True, (255,0,0))
