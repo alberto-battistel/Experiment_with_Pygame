@@ -25,12 +25,10 @@ class State(Enum):
 class Condition():
     def __init__(self,  *matching_events):
         self.matching_events = matching_events
-        
-    def __call__(self,  event):
-        if event in self.matching_events:
-            return True
-        else:
-            return False 
+    
+    def __call__(self,  inputs):
+        return any([inputs[me] for me in self.matching_events])
+
 
 is_on_ground = Condition(K_SPACE)
 is_jumping = Condition(K_w)
@@ -77,19 +75,18 @@ class FiniteStateMachine():
         self.actual_state.enter()
         self.stack.appendleft(self.actual_state)
         
-    def handle_event(self, event):
+    def handle_event(self, inputs):
         target_states = self.table[self.actual_state]
         for case in target_states:
             for state, condition in case.items():
-                if condition(event.key):
-                    print(event.key)
+                if condition(inputs):
                     if state != self.actual_state:
                         self.trigger_transition(state)
                     else:
                         self.actual_state.run()
         return self.actual_state.name
-
-
+    
+    
 #if __name__ == "main":                
 
 fsm = FiniteStateMachine()
@@ -103,7 +100,22 @@ class TestRun(App):
         self.font2 = pygame.font.SysFont('Verdana', 30)
         self.state_to_render = self.font1.render("", True, (255,0,0))
         self.stack_to_render = 5*[self.font2.render("", True, (255,0,0))]
+    
+    def handle_inputs(self, inputs):
+        state = fsm.handle_event(inputs)
+        stack = [state.name for state in fsm.stack]
         
+        self.state_to_render = self.font1.render(state, True, (255,0,0))
+        self.stack_to_render = [self.font2.render(state, True, (255,0,255)) for state in stack]
+        
+#        if event.type == KEYDOWN:
+#            state = fsm.handle_event(event)
+#            stack = [state.name for state in fsm.stack]
+#            
+#            self.state_to_render = self.font1.render(state, True, (255,0,0))
+#            self.stack_to_render = [self.font2.render(state, True, (255,0,255)) for state in stack]
+
+    
     def handle_events(self,event):
         if event.type == KEYDOWN:
             state = fsm.handle_event(event)
@@ -131,6 +143,7 @@ class TestRun(App):
 
                     
 game = TestRun()
+game.start()
 game.run()
 game.quit()
 
