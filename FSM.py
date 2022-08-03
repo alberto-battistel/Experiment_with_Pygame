@@ -23,17 +23,16 @@ class State(Enum):
 
 
 class Condition():
-    def __init__(self,  matching_events):
-        self.matching_events = matching_events
+    def __init__(self,  matching_conditions):
+        self.matching_conditions = matching_conditions
     
     def __call__(self,  event_stack):
-        for key,  value in self.matching_events.items():
+        for key,  value in self.matching_conditions.items():
             if isinstance(value,  list):
                 return any([event_stack[key][v] for v in value])
             else:
                 return event_stack[key][value]
-#            event_stack[key][value]
-#        return any([inputs[me] for me in self.matching_events])
+
 
 
 is_on_ground = Condition({"inputs":K_SPACE})
