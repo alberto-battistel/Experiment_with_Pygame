@@ -35,6 +35,19 @@ is_jumping = Condition(K_w)
 is_moving = Condition(K_a,  K_d)
 is_ducking = Condition(K_s)
 
+class Stack:
+    stack = {"inputs": [], 
+                    "events": [],
+                   "game_events": [],  }
+                    
+    def post(self,  event):
+        if isinstance(event, list):
+            self.stack["events"] = event
+        elif isinstance(event, pygame.key.ScancodeWrapper):
+            self.stack["inputs"] = event
+        else:
+            self.stack["game_events"] = event
+
 class FiniteStateMachine():
     transitions_table = {State.Idle: [
                                     {State.Jump: is_jumping}, 
@@ -100,21 +113,17 @@ class TestRun(App):
         self.font2 = pygame.font.SysFont('Verdana', 30)
         self.state_to_render = self.font1.render("", True, (255,0,0))
         self.stack_to_render = 5*[self.font2.render("", True, (255,0,0))]
+        self.stack = Stack()
     
-    def handle_inputs(self, inputs):
+    def handle_events(self, inputs,  events):
+
+        self.stack.post(inputs)
         state = fsm.handle_event(inputs)
         stack = [state.name for state in fsm.stack]
         
         self.state_to_render = self.font1.render(state, True, (255,0,0))
         self.stack_to_render = [self.font2.render(state, True, (255,0,255)) for state in stack]
            
-    def handle_events(self,event):
-        if event.type == KEYDOWN:
-            state = fsm.handle_event(event)
-            stack = [state.name for state in fsm.stack]
-            
-            self.state_to_render = self.font1.render(state, True, (255,0,0))
-            self.stack_to_render = [self.font2.render(state, True, (255,0,255)) for state in stack]
             
     def render(self):
         # actual state

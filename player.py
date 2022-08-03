@@ -144,6 +144,24 @@ class Physics:
         
         return collision
             
+            
+class Stack:
+    stack = {"inputs": [], 
+                    "events": [],
+                   "game_events": [],  }
+                    
+    def post(self,  event):
+        if isinstance(event, list):
+            self.stack["events"] = event
+        elif isinstance(event, pygame.key.ScancodeWrapper):
+            self.stack["inputs"] = event
+        else:
+            self.stack["game_events"] = event
+            
+    def check(self, ):
+        pass
+            
+    
 class Player(pygame.sprite.Sprite):
     
     def __init__(self,  settings,  group):
@@ -201,7 +219,7 @@ class TestRun(App):
         self.player.settings = self.settings
         self.player.position = vec(*[p/2 for p in self.settings['screen_size']])
         
-    def handle_inputs(self, inputs):
+    def handle_events(self, inputs,  events):
         self.player.handle_inputs(inputs)
                                         
     def update(self):

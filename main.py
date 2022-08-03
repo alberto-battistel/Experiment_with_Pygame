@@ -28,7 +28,7 @@ class App:
     def set_background(self):
         self.screen.fill((220, 220, 220))
                 
-    def handle_inputs(self, inputs):
+    def handle_events(self, inputs,  events):
         pass
     
     def get_inputs(self):
@@ -57,7 +57,7 @@ class App:
                     self.running = False
                 
             inputs = self.get_inputs()
-            self.handle_inputs(inputs)
+            self.handle_events(inputs,  events)
             
             self.set_background()
             self.set_caption()
