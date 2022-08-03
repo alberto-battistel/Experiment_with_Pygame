@@ -36,7 +36,7 @@ is_moving = Condition(K_a,  K_d)
 is_ducking = Condition(K_s)
 
 class FiniteStateMachine():
-    table = {State.Idle: [
+    transitions_table = {State.Idle: [
                                     {State.Jump: is_jumping}, 
                                     {State.Move: is_moving}, 
                                     {State.Duck: is_ducking}, 
@@ -57,7 +57,7 @@ class FiniteStateMachine():
                                     {State.Jump: is_jumping},
                                     ],                 
                                 }
-                    
+        
     def __init__(self):    
         self.old_state = None
         self.running = False  
@@ -76,7 +76,7 @@ class FiniteStateMachine():
         self.stack.appendleft(self.actual_state)
         
     def handle_event(self, inputs):
-        target_states = self.table[self.actual_state]
+        target_states = self.transitions_table[self.actual_state]
         for case in target_states:
             for state, condition in case.items():
                 if condition(inputs):
@@ -107,15 +107,7 @@ class TestRun(App):
         
         self.state_to_render = self.font1.render(state, True, (255,0,0))
         self.stack_to_render = [self.font2.render(state, True, (255,0,255)) for state in stack]
-        
-#        if event.type == KEYDOWN:
-#            state = fsm.handle_event(event)
-#            stack = [state.name for state in fsm.stack]
-#            
-#            self.state_to_render = self.font1.render(state, True, (255,0,0))
-#            self.stack_to_render = [self.font2.render(state, True, (255,0,255)) for state in stack]
-
-    
+           
     def handle_events(self,event):
         if event.type == KEYDOWN:
             state = fsm.handle_event(event)
