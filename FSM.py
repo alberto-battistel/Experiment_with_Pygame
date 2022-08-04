@@ -6,7 +6,8 @@ import pygame as pg
 
 from main import App
 
-from components import EventStack
+from helpers import Inputs, keys_bindings, bind_keys_to_inputs
+from components import EventStack2 as EventStack
 
 class State(Enum):
     Idle = auto()
@@ -25,15 +26,19 @@ class State(Enum):
  
 
 class Condition():
-    def __init__(self,  **matching_conditions):
+    def __init__(self,  *matching_conditions):
         self.matching_conditions = matching_conditions
     
+#    def __call__(self,  event_stack):
+#        for key,  value in self.matching_conditions.items():
+#            if isinstance(value,  list):
+#                return any([event_stack[key][v] for v in value])
+#            else:
+#                return event_stack[key][value]
+                
     def __call__(self,  event_stack):
-        for key,  value in self.matching_conditions.items():
-            if isinstance(value,  list):
-                return any([event_stack[key][v] for v in value])
-            else:
-                return event_stack[key][value]
+        return any([p in event_stack for p in self.matching_conditions])
+
 
 
 class FiniteStateMachine():
@@ -70,10 +75,10 @@ class FiniteStateMachine():
     
 if __name__ == "__main__":                
 
-    is_on_ground = Condition(inputs=pg.K_SPACE)
-    is_jumping = Condition(inputs=pg.K_w)
-    is_moving = Condition(inputs=[pg.K_a, pg.K_d])
-    is_ducking = Condition(inputs=pg.K_s)
+    is_on_ground = Condition(Inputs.Shot)
+    is_jumping = Condition(Inputs.Up)
+    is_moving = Condition([Inputs.Left, Inputs.Right])
+    is_ducking = Condition(Inputs.Down)
 
     fsm = FiniteStateMachine()
     fsm.transitions_table = {State.Idle: [
@@ -112,7 +117,10 @@ if __name__ == "__main__":
         
         def handle_events(self, inputs,  events):
             self.stack.reset()
-            event_stack = self.stack.post(inputs)
+            events = bind_keys_to_inputs(inputs,  keys_bindings)
+            for e in events:
+                print(e)
+            event_stack = self.stack.post(*events)
             
             state = fsm.handle_event(event_stack)
             stack = [state.name for state in fsm.stack]

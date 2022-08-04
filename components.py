@@ -42,6 +42,7 @@ class EventStack2:
         for event in events:
             self.game_events.append(event)
         return self.game_events  
+
         
 class Physics:
     friction : float = -5
