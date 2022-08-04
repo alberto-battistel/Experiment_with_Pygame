@@ -104,13 +104,10 @@ class Physics:
             
 class Stack:
     stack = {"inputs": [], 
-                    "events": [],
                    "game_events": [],  }
                     
     def post(self,  event):
-        if isinstance(event, list):
-            self.stack["events"] = event
-        elif isinstance(event, pygame.key.ScancodeWrapper):
+        if isinstance(event, pygame.key.ScancodeWrapper):
             self.stack["inputs"] = event
         else:
             self.stack["game_events"] = event
