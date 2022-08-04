@@ -39,7 +39,6 @@ class Condition():
                 return event_stack[key][value]
 
 
-
 is_on_ground = Condition(inputs=K_SPACE)
 is_jumping = Condition(inputs=K_w)
 is_moving = Condition(inputs=[K_a,  K_d])
