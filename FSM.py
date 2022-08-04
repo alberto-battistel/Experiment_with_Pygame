@@ -22,6 +22,11 @@ class State(Enum):
         print("Exiting " + self.name)
 
 
+class Event_queue():
+    def __init__(self):
+        self.events = []
+        
+
 class Condition():
     def __init__(self,  matching_conditions):
         self.matching_conditions = matching_conditions
@@ -41,19 +46,16 @@ is_moving = Condition({"inputs":[K_a,  K_d]})
 is_ducking = Condition({"inputs":K_s})
 
 
-class Stack:
+class EventStack:
     def __init__(self):
         self.reset()
     
     def reset(self):
         self.stack = {"inputs": [], 
-                        "events": [],
                         "game_events": [],  }
                         
     def post(self,  event):
-        if isinstance(event, list):
-            self.stack["events"] = event
-        elif isinstance(event, pygame.key.ScancodeWrapper):
+        if isinstance(event, pygame.key.ScancodeWrapper):
             self.stack["inputs"] = event
         else:
             self.stack["game_events"] = event
@@ -101,11 +103,11 @@ class FiniteStateMachine():
         self.actual_state.enter()
         self.stack.appendleft(self.actual_state)
         
-    def handle_event(self, inputs):
+    def handle_event(self, event_stack):
         target_states = self.transitions_table[self.actual_state]
         for case in target_states:
             for state, condition in case.items():
-                if condition(inputs):
+                if condition(event_stack):
                     if state != self.actual_state:
                         self.trigger_transition(state)
                     else:
@@ -126,11 +128,12 @@ class TestRun(App):
         self.font2 = pygame.font.SysFont('Verdana', 30)
         self.state_to_render = self.font1.render("", True, (255,0,0))
         self.stack_to_render = 5*[self.font2.render("", True, (255,0,0))]
-        self.stack = Stack()
+        self.stack = EventStack()
     
     def handle_events(self, inputs,  events):
         self.stack.reset()
         event_stack = self.stack.post(inputs)
+        
         state = fsm.handle_event(event_stack)
         stack = [state.name for state in fsm.stack]
         
