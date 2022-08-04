@@ -1,6 +1,10 @@
-import pygame
-#from pygame.locals import *
+from math import copysign
 
+import pygame as pg
+from pygame import Surface
+
+
+sign = lambda x: copysign(1, x)
 
 class Sequencer():
     def __init__(self, *sprites):
@@ -30,7 +34,7 @@ class SpriteSheet():
         self.images = self.get_strip()
             
     def import_image(self):
-        sheet = pygame.image.load(self.asset_name).convert_alpha()
+        sheet = pg.image.load(self.asset_name).convert_alpha()
         return sheet
     
     def get_strip(self):
@@ -39,8 +43,8 @@ class SpriteSheet():
         images = []
         for x_position in range(0,  sheet_width, step):
             self.rect.x = x_position
-            image = pygame.Surface(self.rect.size,  pygame.SRCALPHA)
+            image = Surface(self.rect.size,  pg.SRCALPHA)
             image.blit(self.sheet, (0, 0), self.rect)
-            images.append(pygame.transform.scale2x(pygame.transform.scale2x(image)))
+            images.append(pg.transform.scale2x(pg.transform.scale2x(image)))
     #        images.append(image)
         return images

@@ -1,10 +1,12 @@
 from enum import Enum,  auto
 from collections import deque
 
-import pygame
-from pygame.locals import *
+import pygame as pg
+#from pygame.locals import *
 
 from main import App
+
+from components import EventStack
 
 class State(Enum):
     Idle = auto()
@@ -20,12 +22,7 @@ class State(Enum):
     
     def exit(self):
         print("Exiting " + self.name)
-
-
-class Event_queue():
-    def __init__(self):
-        self.events = []
-        
+ 
 
 class Condition():
     def __init__(self,  **matching_conditions):
@@ -39,52 +36,9 @@ class Condition():
                 return event_stack[key][value]
 
 
-is_on_ground = Condition(inputs=K_SPACE)
-is_jumping = Condition(inputs=K_w)
-is_moving = Condition(inputs=[K_a,  K_d])
-is_ducking = Condition(inputs=K_s)
-
-
-class EventStack:
-    def __init__(self):
-        self.reset()
-    
-    def reset(self):
-        self.stack = {"inputs": [], 
-                        "game_events": [],  }
-                        
-    def post(self,  event):
-        if isinstance(event, pygame.key.ScancodeWrapper):
-            self.stack["inputs"] = event
-        else:
-            self.stack["game_events"] = event
-            
-        return self.stack
-
-
 class FiniteStateMachine():
-    transitions_table = {State.Idle: [
-                                    {State.Jump: is_jumping}, 
-                                    {State.Move: is_moving}, 
-                                    {State.Duck: is_ducking}, 
-                                    {State.Idle: is_on_ground},
-                                    ], 
-                    State.Duck: [
-                                    {State.Idle: is_on_ground},
-                                    {State.Duck: is_ducking}, 
-                                     ],  
-                    State.Move: [
-                                    {State.Idle: is_on_ground}, 
-                                    {State.Jump: is_jumping}, 
-                                    {State.Duck: is_ducking}, 
-                                    {State.Move: is_moving},
-                                    ], 
-                    State.Jump: [
-                                    {State.Idle: is_on_ground},  
-                                    {State.Jump: is_jumping},
-                                    ],                 
-                                }
-        
+    transitions_table = {}
+    
     def __init__(self):    
         self.old_state = None
         self.running = False  
@@ -114,52 +68,78 @@ class FiniteStateMachine():
         return self.actual_state.name
     
     
-#if __name__ == "main":                
+if __name__ == "__main__":                
 
-fsm = FiniteStateMachine()
-fsm.start_FSM(State.Idle)
-    
+    is_on_ground = Condition(inputs=pg.K_SPACE)
+    is_jumping = Condition(inputs=pg.K_w)
+    is_moving = Condition(inputs=[pg.K_a, pg.K_d])
+    is_ducking = Condition(inputs=pg.K_s)
 
-class TestRun(App):
-    def __init__(self):
-        super().__init__()
-        self.font1 = pygame.font.SysFont('Verdana', 60)
-        self.font2 = pygame.font.SysFont('Verdana', 30)
-        self.state_to_render = self.font1.render("", True, (255,0,0))
-        self.stack_to_render = 5*[self.font2.render("", True, (255,0,0))]
-        self.stack = EventStack()
-    
-    def handle_events(self, inputs,  events):
-        self.stack.reset()
-        event_stack = self.stack.post(inputs)
+    fsm = FiniteStateMachine()
+    fsm.transitions_table = {State.Idle: [
+                                        {State.Jump: is_jumping}, 
+                                        {State.Move: is_moving}, 
+                                        {State.Duck: is_ducking}, 
+                                        {State.Idle: is_on_ground},
+                                        ], 
+                        State.Duck: [
+                                        {State.Idle: is_on_ground},
+                                        {State.Duck: is_ducking}, 
+                                         ],  
+                        State.Move: [
+                                        {State.Idle: is_on_ground}, 
+                                        {State.Jump: is_jumping}, 
+                                        {State.Duck: is_ducking}, 
+                                        {State.Move: is_moving},
+                                        ], 
+                        State.Jump: [
+                                        {State.Idle: is_on_ground},  
+                                        {State.Jump: is_jumping},
+                                        ],                 
+                                    }
+
+    fsm.start_FSM(State.Idle)
         
-        state = fsm.handle_event(event_stack)
-        stack = [state.name for state in fsm.stack]
+
+    class TestRun(App):
+        def __init__(self):
+            super().__init__()
+            self.font1 = pg.font.SysFont('Verdana', 60)
+            self.font2 = pg.font.SysFont('Verdana', 30)
+            self.state_to_render = self.font1.render("", True, (255,0,0))
+            self.stack_to_render = 5*[self.font2.render("", True, (255,0,0))]
+            self.stack = EventStack()
         
-        self.state_to_render = self.font1.render(state, True, (255,0,0))
-        self.stack_to_render = [self.font2.render(state, True, (255,0,255)) for state in stack]
-           
+        def handle_events(self, inputs,  events):
+            self.stack.reset()
+            event_stack = self.stack.post(inputs)
             
-    def render(self):
-        # actual state
-        surface = self.state_to_render
-        width,  height = surface.get_size()
-        position = [1/4*self.settings['screen_size'][0], 1/2*self.settings['screen_size'][1]]
-        position[0] = round(position[0]-width/2)
-        position[1] = round(position[1]-height/2)
-        self.screen.blit(surface, position)
+            state = fsm.handle_event(event_stack)
+            stack = [state.name for state in fsm.stack]
             
-        # stack
-        position = [3/4*self.settings['screen_size'][0], 1/4*self.settings['screen_size'][1]]
-        for surface in self.stack_to_render:
-            height = surface.get_height()
-            position[1] += height
+            self.state_to_render = self.font1.render(state, True, (255,0,0))
+            self.stack_to_render = [self.font2.render(state, True, (255,0,255)) for state in stack]
+               
+        def render(self):
+            # actual state
+            surface = self.state_to_render
+            width,  height = surface.get_size()
+            position = [1/4*self.settings['screen_size'][0], 1/2*self.settings['screen_size'][1]]
+            position[0] = round(position[0]-width/2)
+            position[1] = round(position[1]-height/2)
             self.screen.blit(surface, position)
-            
+                
+            # stack
+            position = [3/4*self.settings['screen_size'][0], 1/4*self.settings['screen_size'][1]]
+            for surface in self.stack_to_render:
+                height = surface.get_height()
+                position[1] += height
+                self.screen.blit(surface, position)
+                
 
-                    
-game = TestRun()
-game.start()
-game.run()
-game.quit()
+                        
+    game = TestRun()
+    game.start()
+    game.run()
+    game.quit()
 
