@@ -8,12 +8,12 @@ from pygame.sprite import Sprite
 
 from main import App
 import level
-from helpers import Sequencer, SpriteSheet 
+from helpers import Sequencer, SpriteSheet, keys_bindings,  Inputs,  bind_keys_to_inputs 
 from components import Physics, EventStack
 from FSM import FiniteStateMachine,  Condition
 
 
-keys_mapping = {pg.K_a: vec(-1,  0),
+bindings_directions = {pg.K_a: vec(-1,  0),
                             pg.K_d: vec(1,  0), 
                             pg.K_w: vec(0,  -1), 
                             pg.K_s: vec(0,  1),
@@ -23,10 +23,18 @@ keys_mapping = {pg.K_a: vec(-1,  0),
                             pg.K_UP: vec(0,  -1), 
                             pg.K_DOWN: vec(0,  -1), }
 
+bindings_directions = {
+                            Inputs.Left: vec(-1,  0), 
+                            Inputs.Right: vec(1,  0), 
+                            Inputs.Up: vec(0,  -1), 
+                            Inputs.Down: vec(0,  -1), 
+                            }
+
 is_on_ground = Condition(inputs=pg.K_SPACE)
 is_jumping = Condition(inputs=pg.K_w)
 is_moving = Condition(inputs=[pg.K_a, pg.K_d])
 is_ducking = Condition(inputs=pg.K_s)
+
 
 class Player(Sprite):
     
@@ -46,7 +54,7 @@ class Player(Sprite):
     def handle_inputs(self, event_stack):
         direction = vec(0, 0)
         
-        for key,  value in keys_mapping.items():
+        for key,  value in bindings_directions.items():
             if event_stack["inputs"][key]:
                 direction += value
         
@@ -89,6 +97,11 @@ if __name__ == "__main__":
             self.player.position = vec(*[p/2 for p in self.settings['screen_size']])
             
         def handle_events(self, inputs,  events):
+            
+            bindings = bind_keys_to_inputs(inputs,keys_bindings )
+            for b in bindings:
+                print(b)
+                
             self.stack.reset()
             event_stack = self.stack.post(inputs)
             self.player.handle_inputs(event_stack)

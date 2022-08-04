@@ -5,7 +5,7 @@ import pygame as pg
 from pygame import Vector2 as vec
 from pygame.sprite import Sprite, Group
 
-from helpers import sign
+from helpers import sign,  Inputs
 
  
 class EventStack:
@@ -13,17 +13,35 @@ class EventStack:
         self.reset()
     
     def reset(self):
-        self.stack = {"inputs": [], 
-                        "game_events": [],  }
-                        
+        self.inputs = []
+        self.game_events = []
+    
+    def asdict(self):
+        return {'inputs': self.inputs, 'game_events': self.game_events }
+        
     def post(self,  event):
         if isinstance(event, pg.key.ScancodeWrapper):
-            self.stack["inputs"] = event
+            self.inputs = event
         else:
-            self.stack["game_events"] = event
+            self.game_events = event
             
-        return self.stack 
+        return self.asdict()    
 
+
+class EventStack2:
+    def __init__(self):
+        self.reset()
+    
+    def reset(self):
+        self.game_events = []
+    
+#    def asdict(self):
+#        return {'inputs': self.inputs, 'game_events': self.game_events }
+    
+    def post(self, *events):
+        for event in events:
+            self.game_events.append(event)
+        return self.game_events  
         
 class Physics:
     friction : float = -5
