@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     is_on_ground = Condition(Inputs.Shot)
     is_jumping = Condition(Inputs.Up)
-    is_moving = Condition([Inputs.Left, Inputs.Right])
+    is_moving = Condition(Inputs.Left, Inputs.Right)
     is_ducking = Condition(Inputs.Down)
 
     fsm = FiniteStateMachine()
