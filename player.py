@@ -2,7 +2,6 @@
 
 
 import pygame as pg
-#from pygame.locals import *
 from pygame import Vector2 as vec
 from pygame import Rect
 from pygame.sprite import Sprite 
@@ -10,7 +9,7 @@ from pygame.sprite import Sprite
 from main import App
 import level
 from helpers import Sequencer, SpriteSheet 
-from components import Physics
+from components import Physics, EventStack
 from FSM import FiniteStateMachine,  Condition
 
 
@@ -44,11 +43,11 @@ class Player(Sprite):
         self.physics = Physics(self,  group)
         self.FSM = FiniteStateMachine()
         
-    def handle_inputs(self, inputs):
+    def handle_inputs(self, event_stack):
         direction = vec(0, 0)
         
         for key,  value in keys_mapping.items():
-            if inputs[key]:
+            if event_stack["inputs"][key]:
                 direction += value
         
         self.direction = direction
@@ -81,6 +80,7 @@ if __name__ == "__main__":
             self.settings = {'screen_size': (16*32, 16*32),
                                         'FPS': 60,
                                         }
+            self.stack = EventStack()
             
         def add_something(self):
             self.level = level.TestWorld(rect_size=level.rect_size, map=level.map)
@@ -89,7 +89,9 @@ if __name__ == "__main__":
             self.player.position = vec(*[p/2 for p in self.settings['screen_size']])
             
         def handle_events(self, inputs,  events):
-            self.player.handle_inputs(inputs)
+            self.stack.reset()
+            event_stack = self.stack.post(inputs)
+            self.player.handle_inputs(event_stack)
                                             
         def update(self):
             self.player.update()
