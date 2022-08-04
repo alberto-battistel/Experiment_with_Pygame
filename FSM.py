@@ -118,8 +118,6 @@ if __name__ == "__main__":
         def handle_events(self, inputs,  events):
             self.stack.reset()
             events = bind_keys_to_inputs(inputs,  keys_bindings)
-            for e in events:
-                print(e)
             event_stack = self.stack.post(*events)
             
             state = fsm.handle_event(event_stack)
