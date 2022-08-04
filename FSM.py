@@ -28,7 +28,7 @@ class Event_queue():
         
 
 class Condition():
-    def __init__(self,  matching_conditions):
+    def __init__(self,  **matching_conditions):
         self.matching_conditions = matching_conditions
     
     def __call__(self,  event_stack):
@@ -40,10 +40,10 @@ class Condition():
 
 
 
-is_on_ground = Condition({"inputs":K_SPACE})
-is_jumping = Condition({"inputs":K_w})
-is_moving = Condition({"inputs":[K_a,  K_d]})
-is_ducking = Condition({"inputs":K_s})
+is_on_ground = Condition(inputs=K_SPACE)
+is_jumping = Condition(inputs=K_w)
+is_moving = Condition(inputs=[K_a,  K_d])
+is_ducking = Condition(inputs=K_s)
 
 
 class EventStack:
