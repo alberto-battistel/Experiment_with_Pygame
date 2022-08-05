@@ -9,15 +9,22 @@ from helpers import sign
 
 class EventStack:
     def __init__(self):
-        self.reset()
+        self.events = []
+        self.next_events = []
     
     def reset(self):
-        self.game_events = []
+        self.events = self.next_events
+        self.next_events = []
         
     def post(self, *events):
         for event in events:
-            self.game_events.append(event)
-        return self.game_events  
+            self.events.append(event)
+        return self.events
+      
+    def next_post(self, *events):
+        for event in events:
+            self.next_events.append(event)
+#        return self.events    
 
         
 class Physics:

@@ -9,23 +9,22 @@ from pygame.sprite import Sprite
 from main import App
 import level
 from helpers import Sequencer, SpriteSheet
-from inputs_mapping import Inputs,  Events,  keys_bindings,  bind_keys_to_inputs 
+from inputs_mapping import Events, keys_bindings,  bind_keys_to_inputs 
 from components import Physics
 from components import EventStack
 from FSM import FiniteStateMachine,  Condition
 
 bindings_directions = {
-                            Inputs.Left: vec(-1,  0), 
-                            Inputs.Right: vec(1,  0), 
-                            Inputs.Up: vec(0,  -1), 
-                            Inputs.Down: vec(0,  1), 
+                            Events.Left: vec(-1,  0), 
+                            Events.Right: vec(1,  0), 
+                            Events.Up: vec(0,  -1), 
+                            Events.Down: vec(0,  1), 
                             }
 
-#is_on_ground = Condition(Events.On_ground)
-is_on_ground = Condition(Inputs.Shot)
-is_jumping = Condition(Inputs.Up)
-is_moving = Condition(Inputs.Left, Inputs.Right)
-is_ducking = Condition(Inputs.Down)
+is_on_ground = Condition(Events.On_ground)
+is_jumping = Condition(Events.Up)
+is_moving = Condition(Events.Left, Events.Right)
+is_ducking = Condition(Events.Down)
 
 
 class Player(Sprite):
@@ -67,11 +66,11 @@ class Player(Sprite):
         
     def move(self):
         self.collision = self.physics.move_collide(self.direction,  delta=1/self.settings['FPS'])
-        if self.collision['bottom']:
-            pass
 
     def update(self):
         self.move()
+        if self.collision['bottom']:
+            self.game.stack.next_post(Events.On_ground)
         self.image = self.sprites()
 
         
@@ -92,11 +91,13 @@ if __name__ == "__main__":
         def handle_events(self, inputs,  events):
             
             events = bind_keys_to_inputs(inputs,keys_bindings )
-            for e in events:
-                print(e)
+#            for e in events:
+#                print(e)
                 
             self.stack.reset()
             event_stack = self.stack.post(*events)
+            for e in self.stack.events:
+                print(e)
             self.player.handle_inputs(event_stack)
                                             
         def update(self):

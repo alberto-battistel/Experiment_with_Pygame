@@ -6,7 +6,7 @@ import pygame as pg
 
 from main import App
 
-from inputs_mapping import Inputs,  keys_bindings,  bind_keys_to_inputs 
+from inputs_mapping import Events,  keys_bindings,  bind_keys_to_inputs 
 from components import EventStack
 
 class State(Enum):
@@ -38,7 +38,6 @@ class Condition():
                 
     def __call__(self,  event_stack):
         return any([p in event_stack for p in self.matching_conditions])
-
 
 
 class FiniteStateMachine():
@@ -75,10 +74,10 @@ class FiniteStateMachine():
     
 if __name__ == "__main__":                
 
-    is_on_ground = Condition(Inputs.Shot)
-    is_jumping = Condition(Inputs.Up)
-    is_moving = Condition(Inputs.Left, Inputs.Right)
-    is_ducking = Condition(Inputs.Down)
+    is_on_ground = Condition(Events.Shot)
+    is_jumping = Condition(Events.Up)
+    is_moving = Condition(Events.Left, Events.Right)
+    is_ducking = Condition(Events.Down)
 
     fsm = FiniteStateMachine()
     fsm.transitions_table = {State.Idle: [
