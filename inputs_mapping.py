@@ -23,6 +23,10 @@ class Inputs(IntEnum):
     Pause = auto()
     Shot = auto()
     
+class Events(IntEnum):
+    On_ground = auto()
+    On_wall = auto()
+    
 keys_bindings = {
                             Inputs.Left: [pg.K_a, pg.K_LEFT],
                             Inputs.Right: [pg.K_d,  pg.K_RIGHT], 

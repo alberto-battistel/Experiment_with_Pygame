@@ -9,7 +9,7 @@ from pygame.sprite import Sprite
 from main import App
 import level
 from helpers import Sequencer, SpriteSheet
-from inputs_mapping import Inputs,  keys_bindings,  bind_keys_to_inputs 
+from inputs_mapping import Inputs,  Events,  keys_bindings,  bind_keys_to_inputs 
 from components import Physics
 from components import EventStack
 from FSM import FiniteStateMachine,  Condition
@@ -21,6 +21,7 @@ bindings_directions = {
                             Inputs.Down: vec(0,  1), 
                             }
 
+#is_on_ground = Condition(Events.On_ground)
 is_on_ground = Condition(Inputs.Shot)
 is_jumping = Condition(Inputs.Up)
 is_moving = Condition(Inputs.Left, Inputs.Right)
@@ -65,8 +66,9 @@ class Player(Sprite):
         
     def move(self):
         self.collision = self.physics.move_collide(self.direction,  delta=1/self.settings['FPS'])
-#        print(self.collision)
-                
+        if self.collision['bottom']:
+            pass
+
     def update(self):
         self.move()
         self.image = self.sprites()

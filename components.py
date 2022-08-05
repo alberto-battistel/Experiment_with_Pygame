@@ -13,10 +13,7 @@ class EventStack:
     
     def reset(self):
         self.game_events = []
-    
-#    def asdict(self):
-#        return {'inputs': self.inputs, 'game_events': self.game_events }
-    
+        
     def post(self, *events):
         for event in events:
             self.game_events.append(event)
