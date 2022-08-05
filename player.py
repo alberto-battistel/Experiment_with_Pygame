@@ -30,13 +30,14 @@ is_ducking = Condition(Inputs.Down)
 
 class Player(Sprite):
     
-    def __init__(self,  settings,  group):
+    def __init__(self,  game,  group):
         super().__init__()
         self.rect = Rect(0, 0, 16, 16)
         self.sprites = Sequencer(*SpriteSheet("first_Experiment.png",  self.rect).get_strip())
         self.image = self.sprites() 
         self.rect = self.image.get_rect()
-        self.settings = settings
+        self.game = game
+        self.settings = game.settings
         self.bounding_box = Rect(0, 0,  *self.settings['screen_size'])
         self.direction = vec(0, 0)
         self._position = vec(0, 0)
@@ -85,8 +86,7 @@ if __name__ == "__main__":
             
         def add_something(self):
             self.level = level.TestWorld(rect_size=level.rect_size, map=level.map)
-            self.player = Player(self.settings,  self.level.tiles)
-            self.player.settings = self.settings
+            self.player = Player(self,  self.level.tiles)
             self.player.position = vec(*[p/2 for p in self.settings['screen_size']])
             
         def handle_events(self, inputs,  events):
