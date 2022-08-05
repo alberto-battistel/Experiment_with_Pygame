@@ -6,7 +6,7 @@ import pygame as pg
 
 from main import App
 
-from helpers import Inputs, keys_bindings, bind_keys_to_inputs
+from inputs_mapping import Inputs,  keys_bindings,  bind_keys_to_inputs 
 from components import EventStack
 
 class State(Enum):

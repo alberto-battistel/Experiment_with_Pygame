@@ -8,21 +8,11 @@ from pygame.sprite import Sprite
 
 from main import App
 import level
-from helpers import Sequencer, SpriteSheet, keys_bindings,  Inputs,  bind_keys_to_inputs 
+from helpers import Sequencer, SpriteSheet
+from inputs_mapping import Inputs,  keys_bindings,  bind_keys_to_inputs 
 from components import Physics
 from components import EventStack
 from FSM import FiniteStateMachine,  Condition
-
-
-#bindings_directions = {pg.K_a: vec(-1,  0),
-#                            pg.K_d: vec(1,  0), 
-#                            pg.K_w: vec(0,  -1), 
-#                            pg.K_s: vec(0,  1),
-##                            pg.K_SPACE: lambda: print("space"),
-#                            pg.K_LEFT: vec(-1,  0), 
-#                            pg.K_RIGHT: vec(1,  0), 
-#                            pg.K_UP: vec(0,  -1), 
-#                            pg.K_DOWN: vec(0,  -1), }
 
 bindings_directions = {
                             Inputs.Left: vec(-1,  0), 

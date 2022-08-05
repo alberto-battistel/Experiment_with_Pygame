@@ -5,7 +5,7 @@ import pygame as pg
 from pygame import Vector2 as vec
 from pygame.sprite import Sprite, Group
 
-from helpers import sign,  Inputs
+from helpers import sign
 
 class EventStack:
     def __init__(self):
