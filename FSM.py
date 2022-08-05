@@ -7,7 +7,7 @@ import pygame as pg
 from main import App
 
 from helpers import Inputs, keys_bindings, bind_keys_to_inputs
-from components import EventStack2 as EventStack
+from components import EventStack
 
 class State(Enum):
     Idle = auto()

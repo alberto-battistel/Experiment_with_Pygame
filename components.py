@@ -7,28 +7,7 @@ from pygame.sprite import Sprite, Group
 
 from helpers import sign,  Inputs
 
- 
 class EventStack:
-    def __init__(self):
-        self.reset()
-    
-    def reset(self):
-        self.inputs = []
-        self.game_events = []
-    
-    def asdict(self):
-        return {'inputs': self.inputs, 'game_events': self.game_events }
-        
-    def post(self,  event):
-        if isinstance(event, pg.key.ScancodeWrapper):
-            self.inputs = event
-        else:
-            self.game_events = event
-            
-        return self.asdict()    
-
-
-class EventStack2:
     def __init__(self):
         self.reset()
     

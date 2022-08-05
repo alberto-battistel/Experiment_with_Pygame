@@ -10,7 +10,7 @@ from main import App
 import level
 from helpers import Sequencer, SpriteSheet, keys_bindings,  Inputs,  bind_keys_to_inputs 
 from components import Physics
-from components import EventStack2 as EventStack
+from components import EventStack
 from FSM import FiniteStateMachine,  Condition
 
 
