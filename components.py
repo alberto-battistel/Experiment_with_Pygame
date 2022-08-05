@@ -30,8 +30,8 @@ class EventStack:
 class Physics:
     friction : float = -5
     gravity : float = 800
-    movement : vec = vec(1200, 3200)
-    max_velocity : vec = vec(200, 200)
+    movement : vec = vec(1200, 40000)
+    max_velocity : vec = vec(200, 2000)
     
     vel : vec = vec(0, 0)
     acc : vec = vec(0, 0)
@@ -84,6 +84,7 @@ class Physics:
                     collision["right"] = coll.rect.left
                 elif delta_position.x < 0:
                     collision["left"] = coll.rect.right
+            self.vel.x = 0
         
         for key, value in collision.items():
             if value:
@@ -99,7 +100,8 @@ class Physics:
                     collision["bottom"] = coll.rect.top
                 elif delta_position.y < 0:
                     collision["top"] = coll.rect.bottom
-        
+            self.vel.y = 0
+            
         for key, value in collision.items():
             if value:
                 setattr(self.sprite.rect, key, value)

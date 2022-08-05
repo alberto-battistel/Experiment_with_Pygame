@@ -11,7 +11,7 @@ from components import EventStack
 
 class State(Enum):
     Idle = auto()
-    Jump = auto()
+    In_air = auto()
     Duck = auto()
     Move = auto()
                     
@@ -28,13 +28,6 @@ class State(Enum):
 class Condition():
     def __init__(self,  *matching_conditions):
         self.matching_conditions = matching_conditions
-    
-#    def __call__(self,  event_stack):
-#        for key,  value in self.matching_conditions.items():
-#            if isinstance(value,  list):
-#                return any([event_stack[key][v] for v in value])
-#            else:
-#                return event_stack[key][value]
                 
     def __call__(self,  event_stack):
         return any([p in event_stack for p in self.matching_conditions])
@@ -81,7 +74,7 @@ if __name__ == "__main__":
 
     fsm = FiniteStateMachine()
     fsm.transitions_table = {State.Idle: [
-                                        {State.Jump: is_jumping}, 
+                                        {State.In_air: is_jumping}, 
                                         {State.Move: is_moving}, 
                                         {State.Duck: is_ducking}, 
                                         {State.Idle: is_on_ground},
@@ -92,13 +85,13 @@ if __name__ == "__main__":
                                          ],  
                         State.Move: [
                                         {State.Idle: is_on_ground}, 
-                                        {State.Jump: is_jumping}, 
+                                        {State.In_air: is_jumping}, 
                                         {State.Duck: is_ducking}, 
                                         {State.Move: is_moving},
                                         ], 
-                        State.Jump: [
+                        State.In_air: [
                                         {State.Idle: is_on_ground},  
-                                        {State.Jump: is_jumping},
+                                        {State.In_air: is_jumping},
                                         ],                 
                                     }
 
