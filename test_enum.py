@@ -71,16 +71,20 @@ class States:
         pass
         print("Exiting " + self.name)
         
-    def redefine(self, fun_name, fun):
+    def redefine(self, fun):
+        fun_name = fun.__name__
+        print(self)
         if hasattr(self, fun_name):
-            setattr(self, fun_name, types.MethodType(run, States.a))
+            setattr(self, fun_name, types.MethodType(fun, self))
         else:
             print(fun_name,  "is not implemented")
-        
+
+# different ways to initialize a State    
 States("a")
 States("b")
 [States(p) for p in["c", "d"]]
 
+# different ways to override a function
 def run(obj_instance):
     if obj_instance.count == 0:
         print("something")
@@ -91,4 +95,8 @@ def run(obj_instance):
     if obj_instance.count == 0:
         print("something")
 
-States.b.redefine("run",  run)
+States.b.redefine(run)
+
+@States.c.redefine
+def run(self):
+    print("new")
