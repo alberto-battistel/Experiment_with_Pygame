@@ -24,6 +24,7 @@ class Events(IntEnum):
     Shot = auto()
     On_ground = auto()
     On_wall = auto()
+    On_air = auto()
     
 keys_bindings = {
                             Events.Left: [pg.K_a, pg.K_LEFT],

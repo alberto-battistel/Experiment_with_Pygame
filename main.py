@@ -67,7 +67,7 @@ class App:
             
             pygame.display.flip()
             
-            self.clock.tick(settings['FPS'])
+            self.clock.tick(self.settings['FPS'])
             
     
 if __name__ == '__main__':

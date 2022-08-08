@@ -2,28 +2,7 @@ from enum import Enum, auto
 import types
 
 
-class State(Enum):
-    Idle = auto()
-    In_air = auto()
-    Jump = auto()
-    Duck = auto()
-    Move = auto()
 
-#    def __init__(self,  _):
-#        self.count = 0
-#        self.bindings_directions = None
-        
-    def enter(self):
-        pass
-#        print("Entering " + self.name)
-        
-    def run(self):
-        pass
-#        print("Running " + self.name)
-    
-    def exit(self):
-        pass
-#        print("Exiting " + self.name)
 
 
 class States:
@@ -38,7 +17,11 @@ class States:
     
     @classmethod
     def add_name(cls,  instance):
-            setattr(cls, instance.name,  instance)
+        setattr(cls, instance.name,  instance)
+            
+    @classmethod
+    def add_attr(cls, attr_name, value):
+        setattr(cls, attr_name,  value.copy())
     
     def __eq__(self,  value):
         if type(value) == str:
@@ -57,8 +40,11 @@ class States:
         return self.value
         
     def __repr__(self):
-        return str(self.value)
-        
+        return self.name + ": " + str(self.value)
+    
+    def __hash__(self):
+        return self.value
+    
     def enter(self):
         pass
         print("Entering " + self.name)
@@ -79,24 +65,46 @@ class States:
         else:
             print(fun_name,  "is not implemented")
 
-# different ways to initialize a State    
-States("a")
-States("b")
-[States(p) for p in["c", "d"]]
 
-# different ways to override a function
-def run(obj_instance):
-    if obj_instance.count == 0:
-        print("something")
+if __name__ == '__main__':
+    from pygame import Vector2 as vec
+    from inputs_mapping import Events
+    player_states = ["Idle", 
+                        "In_air", 
+                        "Jump", 
+                        "Duck", 
+                        "Move", ]
+
+    bindings_directions = {
+                                Events.Left: vec(-1,  0), 
+                                Events.Right: vec(1,  0), 
+                                Events.Up: vec(0,  -1), 
+                                Events.Down: vec(0,  1), 
+                                }
+
+    States.add_attr("bindings_directions", bindings_directions)
+    [States(s) for s in player_states]
     
-States.a.run = types.MethodType(run, States.a)
-
-def run(obj_instance):
-    if obj_instance.count == 0:
-        print("something")
-
-States.b.redefine(run)
-
-@States.c.redefine
-def run(self):
-    print("new")
+#    # different ways to initialize a State    
+#    States("a")
+#    States("b")
+#    [States(p) for p in["c", "d"]]
+#
+#    # different ways to override a function
+#    def run(obj_instance):
+#        if obj_instance.count == 0:
+#            print("something")
+#        
+#    States.a.run = types.MethodType(run, States.a)
+#
+#    def run(obj_instance):
+#        if obj_instance.count == 0:
+#            print("something")
+#
+#    States.b.redefine(run)
+#
+#    @States.c.redefine
+#    def run(self):
+#        print("new")
+#
+#    States.add_attr("u", {3: 34})

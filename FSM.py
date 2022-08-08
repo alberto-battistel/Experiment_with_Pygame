@@ -9,6 +9,7 @@ from main import App
 from inputs_mapping import Events,  keys_bindings,  bind_keys_to_inputs 
 from components import EventStack
 
+
 class State(Enum):
     Idle = auto()
     In_air = auto()
@@ -24,23 +25,32 @@ class State(Enum):
     def exit(self):
         print("Exiting " + self.name)
  
+State.count = 0
+
 
 class Condition():
     def __init__(self,  *matching_conditions):
         self.matching_conditions = matching_conditions
                 
     def __call__(self,  event_stack):
-        return any([p in event_stack for p in self.matching_conditions])
+        return any([event_stack[mc] >0 for mc in self.matching_conditions])
 
 
 class FiniteStateMachine():
     transitions_table = {}
     
-    def __init__(self):    
+    def __init__(self, *states):    
         self.old_state = None
         self.running = False  
         self.stack = deque(maxlen=4)
+        self.parent = None
+        self.add_states(*states)
     
+    def add_states(self, *states):
+        for state in states:
+            state.parent = self
+        self.states = states
+           
     def start_FSM(self,  starting_state):
        self.actual_state = starting_state
        self.actual_state.enter()
@@ -58,9 +68,12 @@ class FiniteStateMachine():
         for case in target_states:
             for state, condition in case.items():
                 if condition(event_stack):
-                    if state != self.actual_state:
+                    if state is not self.actual_state:
                         self.trigger_transition(state)
+                        self.actual_state.count = 0
+#                        return self.actual_state.name
                     else:
+                        self.actual_state.count += 1
                         self.actual_state.run()
         return self.actual_state.name
     

@@ -8,30 +8,25 @@ from pygame.sprite import Sprite, Group
 from helpers import sign
 
 class EventStack:
-    def __init__(self):
-        self.events = []
-        self.next_events = []
+    def __init__(self, events_dict,  rules):
+        self.events_dict = events_dict
+        self.rules = rules
     
-    def reset(self):
-        self.events = self.next_events
-        self.next_events = []
-        
+    def update(self):
+        for key, value in self.events_dict.items():
+            self.events_dict[key] = max(value-1, 0)
+                
     def post(self, *events):
         for event in events:
-            self.events.append(event)
-        return self.events
-      
-    def next_post(self, *events):
-        for event in events:
-            self.next_events.append(event)
-#        return self.events    
-
+            self.events_dict[event] = self.rules[event]
+        return self.events_dict
+    
         
 class Physics:
     friction : float = -5
     gravity : float = 800
-    movement : vec = vec(1200, 40000)
-    max_velocity : vec = vec(200, 2000)
+    movement : vec = vec(200, 1600)
+    max_velocity : vec = vec(100, 1000)
     
     vel : vec = vec(0, 0)
     acc : vec = vec(0, 0)
@@ -55,7 +50,7 @@ class Physics:
         self.vel += 0.5 * self.acc * delta #averaged new velocity
         self.vel = self.clamp(self.vel)
 
-#        print(self.vel)
+#        print(self.vel,  self.acc)
         
         return self.vel
         
